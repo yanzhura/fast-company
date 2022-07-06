@@ -38,12 +38,20 @@ const Users = () => {
         </tr>
     ));
 
-    const ending = users.length >= 2 && users.length <= 4 ? 'а' : '';
+    const getEnding = () => {
+        const lastDigit = Number(users.length.toString().at(-1));
+        const preLastDigit = Number(users.length.toString().at(-2)) || 0;
+        if (preLastDigit !== 1 && lastDigit >= 2 && lastDigit <= 4) {
+            return 'человека';
+        } else {
+            return 'человек';
+        }
+    };
 
     const headerBadge = users.length ? (
         <h3>
             <div className="badge bg-primary m-2">
-                {users.length} человек{ending} тусанёт с тобой сегодня
+                {users.length} {getEnding()} тусанёт с тобой сегодня
             </div>
         </h3>
     ) : (
