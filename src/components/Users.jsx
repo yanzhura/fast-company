@@ -50,18 +50,18 @@ const Users = () => {
 
     const headerBadge = users.length ? (
         <h3>
-            <div className="badge bg-primary m-2">
+            <div className="badge bg-primary">
                 {users.length} {getPhrase()} тусанёт с тобой сегодня
             </div>
         </h3>
     ) : (
         <h3>
-            <div className="badge bg-danger m-2">Никто с тобой не тусанёт</div>
+            <div className="badge bg-danger">Никто с тобой не тусанёт</div>
         </h3>
     );
 
     const usersTable = users.length > 0 && (
-        <table className="table m-2">
+        <table className="table">
             <thead>
                 <tr>
                     <th scope="col">Имя</th>
@@ -77,7 +77,7 @@ const Users = () => {
     );
 
     return (
-        <div>
+        <div className="p-2">
             {headerBadge}
             {usersTable}
         </div>
