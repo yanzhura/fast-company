@@ -4,8 +4,8 @@ import api from '../api';
 const Users = () => {
     const [users, setUsers] = useState(api.users.fetchAll());
 
-    const renderUserQualities = user => {
-        return user.qualities.map(quality => {
+    const renderUserQualities = qualities => {
+        return qualities.map(quality => {
             const badgeStyle = `badge bg-${quality.color} m-1`;
             return (
                 <span key={quality._id} className={badgeStyle}>
@@ -22,7 +22,7 @@ const Users = () => {
     const tableRows = users.map(user => (
         <tr key={user._id}>
             <td>{user.name}</td>
-            <td>{renderUserQualities(user)}</td>
+            <td>{renderUserQualities(user.qualities)}</td>
             <td>{user.profession.name}</td>
             <td>{user.completedMeetings}</td>
             <td>{user.rate}</td>
@@ -42,43 +42,45 @@ const Users = () => {
         const lastDigit = Number(users.length.toString().at(-1));
         const preLastDigit = Number(users.length.toString().at(-2)) || 0;
         if (preLastDigit !== 1 && lastDigit >= 2 && lastDigit <= 4) {
-            return 'человека';
+            return 'человека тусанут';
         } else {
-            return 'человек';
+            return 'человек тусанёт';
         }
     };
 
-    const headerBadge = users.length ? (
-        <h3>
-            <div className="badge bg-primary">
-                {users.length} {getPhrase()} тусанёт с тобой сегодня
-            </div>
-        </h3>
-    ) : (
-        <h3>
-            <div className="badge bg-danger">Никто с тобой не тусанёт</div>
-        </h3>
-    );
+    const badgePhrase = users.length
+        ? `${users.length} ${getPhrase()} с тобой сегодня`
+        : 'Никто с тобой не тусанёт';
 
-    const usersTable = users.length > 0 && (
-        <table className="table">
-            <thead>
-                <tr>
-                    <th scope="col">Имя</th>
-                    <th scope="col">Качества</th>
-                    <th scope="col">Профессия</th>
-                    <th scope="col">Встретился, раз</th>
-                    <th scope="col">Оценка</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>{tableRows}</tbody>
-        </table>
-    );
+    const usersTable =
+        users.length > 0 ? (
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Качества</th>
+                        <th scope="col">Профессия</th>
+                        <th scope="col">Встретился, раз</th>
+                        <th scope="col">Оценка</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>{tableRows}</tbody>
+            </table>
+        ) : (
+            ''
+        );
 
     return (
         <div className="p-2">
-            {headerBadge}
+            <h3>
+                <div
+                    className={
+                        'badge ' + (users.length ? 'bg-primary' : 'bg-danger')
+                    }>
+                    {badgePhrase}
+                </div>
+            </h3>
             {usersTable}
         </div>
     );
