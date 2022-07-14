@@ -1,87 +1,50 @@
 import React, { useState } from 'react';
-import api from '../api';
+import SearchStatus from './SearchStatus';
+import User from './User';
 
-const Users = () => {
-    const [users, setUsers] = useState(api.users.fetchAll());
-
-    const renderUserQualities = qualities => {
-        return qualities.map(quality => {
-            const badgeStyle = `badge bg-${quality.color} m-1`;
-            return (
-                <span key={quality._id} className={badgeStyle}>
-                    {quality.name}
-                </span>
-            );
-        });
-    };
-
-    const handleDeleteRow = id => {
-        setUsers(prevUsers => prevUsers.filter(user => user._id !== id));
-    };
-
-    const tableRows = users.map(user => (
-        <tr key={user._id}>
-            <td>{user.name}</td>
-            <td>{renderUserQualities(user.qualities)}</td>
-            <td>{user.profession.name}</td>
-            <td>{user.completedMeetings}</td>
-            <td>{user.rate}</td>
-            <td>
-                <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => {
-                        handleDeleteRow(user._id);
-                    }}>
-                    <i className="gg-trash"></i>
-                </button>
-            </td>
-        </tr>
+const Users = ({ users, onDelete, onBookmark }) => {
+    const usersList = users.map(user => (
+        <User
+            key={user._id}
+            {...user}
+            onDelete={onDelete}
+            onBookmark={onBookmark}
+        />
     ));
 
-    const getPhrase = () => {
-        const lastDigit = Number(users.length.toString().at(-1));
-        const preLastDigit = Number(users.length.toString().at(-2)) || 0;
-        if (preLastDigit !== 1 && lastDigit >= 2 && lastDigit <= 4) {
-            return 'человека тусанут';
-        } else {
-            return 'человек тусанёт';
-        }
-    };
-
-    const badgePhrase = users.length
-        ? `${users.length} ${getPhrase()} с тобой сегодня`
-        : 'Никто с тобой не тусанёт';
-
-    const usersTable =
-        users.length > 0 ? (
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Имя</th>
-                        <th scope="col">Качества</th>
-                        <th scope="col">Профессия</th>
-                        <th scope="col">Встретился, раз</th>
-                        <th scope="col">Оценка</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>{tableRows}</tbody>
-            </table>
-        ) : (
-            ''
-        );
+    const usersTable = (
+        <table className="table">
+            <thead>
+                <tr>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Качества</th>
+                    <th scope="col">Профессия</th>
+                    <th scope="col">Встретился, раз</th>
+                    <th scope="col">Оценка</th>
+                    <th scope="col">
+                        <span className="badge bg-secondary">
+                            <i
+                                className="bi bi-bookmark-fill"
+                                style={{ fontSize: '1.1rem' }}></i>
+                        </span>
+                    </th>
+                    <th scope="col">
+                        <span className="badge bg-secondary">
+                            <i
+                                className="bi bi-trash3"
+                                style={{ fontSize: '1.1rem' }}></i>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>{usersList}</tbody>
+        </table>
+    );
 
     return (
         <div className="p-2">
-            <h3>
-                <div
-                    className={
-                        'badge ' + (users.length ? 'bg-primary' : 'bg-danger')
-                    }>
-                    {badgePhrase}
-                </div>
-            </h3>
-            {usersTable}
+            <SearchStatus usersNumber={users.length} />
+            <div>{users.length > 0 ? usersTable : ''}</div>
         </div>
     );
 };
