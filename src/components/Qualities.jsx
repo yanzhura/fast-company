@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Qualities = ({ qualities }) => {
-    const qualityBadges = qualities.map(quality => {
+    const qualityBadges = qualities.map((quality) => {
         const badgeStyle = `badge bg-${quality.color} m-1`;
 
         return (
@@ -12,6 +13,10 @@ const Qualities = ({ qualities }) => {
     });
 
     return qualityBadges;
+};
+
+Qualities.propTypes = {
+    qualities: PropTypes.array.isRequired
 };
 
 export default Qualities;
