@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const SearchStatus = ({ usersNumber }) => {
     const getPhrase = () => {
@@ -20,11 +21,16 @@ const SearchStatus = ({ usersNumber }) => {
             <div
                 className={
                     'badge ' + (usersNumber ? 'bg-primary' : 'bg-danger')
-                }>
+                }
+            >
                 {statusText}
             </div>
         </h3>
     );
+};
+
+SearchStatus.propTypes = {
+    usersNumber: PropTypes.number.isRequired
 };
 
 export default SearchStatus;

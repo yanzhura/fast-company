@@ -1,6 +1,7 @@
 import React from 'react';
 import Qualities from './Qualities';
 import Bookmark from './Bookmark';
+import PropTypes from 'prop-types';
 
 const User = ({
     _id,
@@ -11,7 +12,7 @@ const User = ({
     rate,
     bookmark,
     onBookmark,
-    onDelete,
+    onDelete
 }) => {
     return (
         <tr key={_id}>
@@ -33,14 +34,28 @@ const User = ({
                     className="btn btn-danger btn-sm"
                     onClick={() => {
                         onDelete(_id);
-                    }}>
+                    }}
+                >
                     <i
                         className="bi bi-trash3"
-                        style={{ fontSize: '1.1rem' }}></i>
+                        style={{ fontSize: '1.1rem' }}
+                    ></i>
                 </button>
             </td>
         </tr>
     );
+};
+
+User.propTypes = {
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    qualities: PropTypes.array.isRequired,
+    profession: PropTypes.object.isRequired,
+    completedMeetings: PropTypes.number.isRequired,
+    rate: PropTypes.number.isRequired,
+    bookmark: PropTypes.bool.isRequired,
+    onBookmark: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 };
 
 export default User;
