@@ -15,7 +15,14 @@
     "rules": {
         "indent": ["error", 4],
         "semi": [2, "always"],
-        "space-before-function-paren": ["error", "never"],
-        "quotes": "off"
+        "space-before-function-paren": [
+            "error",
+            {
+                "anonymous": "always",
+                "named": "never"
+            }
+        ],
+        "quotes": "off",
+        "multiline-ternary": "off"
     }
 }
