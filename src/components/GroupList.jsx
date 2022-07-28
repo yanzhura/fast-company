@@ -8,19 +8,27 @@ const GroupList = ({
     valueProperty,
     dataProperty
 }) => {
+    // Делаем наш компонент более универсальным: он может принимать и объект с объектами и массив с объектами
+    let data = [];
+    if (!Array.isArray(items)) {
+        data = Object.keys(items).map((key) => items[key]);
+    } else {
+        data = items;
+    }
+
     return (
         <ul className="list-group">
-            {Object.keys(items).map((key) => (
+            {data.map((item) => (
                 <li
-                    key={items[key][valueProperty]}
+                    key={item[valueProperty]}
                     className={
                         'list-group-item' +
-                        (items[key] === currentItem ? ' active' : '')
+                        (item === currentItem ? ' active' : '')
                     }
-                    onClick={() => onItemSelect(items[key])}
+                    onClick={() => onItemSelect(item)}
                     role="button"
                 >
-                    {items[key][dataProperty]}
+                    {item[dataProperty]}
                 </li>
             ))}
         </ul>
@@ -28,7 +36,10 @@ const GroupList = ({
 };
 
 GroupList.propTypes = {
-    items: PropTypes.object.isRequired,
+    items: PropTypes.oneOfType([
+        PropTypes.object.isRequired,
+        PropTypes.array.isRequired
+    ]),
     onItemSelect: PropTypes.func.isRequired,
     currentItem: PropTypes.object,
     valueProperty: PropTypes.string.isRequired,

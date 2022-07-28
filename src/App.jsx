@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Users from './components/Users';
 import api from './api';
+import Preloader from './components/Preloader';
 
 const App = () => {
-    const [users, setUsers] = useState(api.users.fetchAll());
+    const [users, setUsers] = useState();
+
+    useEffect(() => {
+        api.users.fetchAll().then((data) => setUsers(data));
+    }, []);
 
     const handleDeleteRow = (id) => {
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
@@ -22,11 +27,15 @@ const App = () => {
 
     return (
         <div>
-            <Users
-                allUsers={users}
-                onDelete={handleDeleteRow}
-                onBookmark={handleBookmark}
-            />
+            {users ? (
+                <Users
+                    allUsers={users}
+                    onDelete={handleDeleteRow}
+                    onBookmark={handleBookmark}
+                />
+            ) : (
+                <Preloader />
+            )}
         </div>
     );
 };
