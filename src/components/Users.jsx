@@ -42,6 +42,10 @@ const Users = ({ allUsers, onDelete, onBookmark }) => {
     const usersCrop = paginate(filteredUsers, currentPage, PAGE_SIZE);
     const pagesCount = Math.ceil(filteredUsers.length / PAGE_SIZE);
 
+    if (pagesCount < currentPage && pagesCount > 0) {
+        setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
+    }
+
     const usersList = usersCrop.map((user) => (
         <User
             key={user._id}
