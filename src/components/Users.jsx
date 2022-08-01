@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import GroupList from './GroupList';
 import api from '../api';
 import { paginate } from '../utils/utils';
+import Preloader from './Preloader';
 
 const Users = ({ allUsers, onDelete, onBookmark }) => {
     const PAGE_SIZE = 3;
@@ -41,6 +42,10 @@ const Users = ({ allUsers, onDelete, onBookmark }) => {
     const usersCrop = paginate(filteredUsers, currentPage, PAGE_SIZE);
     const pagesCount = Math.ceil(filteredUsers.length / PAGE_SIZE);
 
+    if (pagesCount < currentPage && pagesCount > 0) {
+        setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
+    }
+
     const usersList = usersCrop.map((user) => (
         <User
             key={user._id}
@@ -51,9 +56,9 @@ const Users = ({ allUsers, onDelete, onBookmark }) => {
     ));
 
     return (
-        <div className="d-flex mt-2">
+        <div className="d-flex">
             {professions ? (
-                <div className="d-flex flex-column flex-shrink-0 p-3">
+                <div className="d-flex flex-column flex-shrink-0 m-2">
                     <GroupList
                         items={professions}
                         onItemSelect={onItemSelect}
@@ -67,10 +72,10 @@ const Users = ({ allUsers, onDelete, onBookmark }) => {
                     </button>
                 </div>
             ) : (
-                ''
+                <Preloader />
             )}
 
-            <div className="d-flex flex-column">
+            <div className="d-flex flex-column flex-grow-1 m-2">
                 <SearchStatus usersNumber={filteredUsers.length} />
                 {allUsers.length > 0 ? (
                     <table className="table">
