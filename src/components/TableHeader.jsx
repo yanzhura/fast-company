@@ -17,6 +17,20 @@ const TableHeader = ({ selectedSort, onSort, columns }) => {
         }
     };
 
+    const getSortSymbol = () => {
+        return selectedSort.order === 'asc' ? (
+            <i
+                className="bi bi-caret-up-fill p-2"
+                style={{ color: 'grey' }}
+            ></i>
+        ) : (
+            <i
+                className="bi bi-caret-down-fill p-2"
+                style={{ color: 'grey' }}
+            ></i>
+        );
+    };
+
     return (
         <thead>
             <tr>
@@ -33,6 +47,9 @@ const TableHeader = ({ selectedSort, onSort, columns }) => {
                             scope="col"
                         >
                             {columns[key].name}
+                            {columns[key].path === selectedSort.path
+                                ? getSortSymbol()
+                                : ''}
                         </th>
                     );
                 })}
