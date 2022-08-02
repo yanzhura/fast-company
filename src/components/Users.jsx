@@ -1,19 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import SearchStatus from './SearchStatus';
-import Pagination from '../components/Pagination';
-import User from './User';
-import PropTypes from 'prop-types';
-import GroupList from './GroupList';
-import api from '../api';
+import { orderBy } from 'lodash';
 import { paginate } from '../utils/utils';
+import api from '../api';
+import GroupList from './GroupList';
+import Pagination from '../components/Pagination';
 import Preloader from './Preloader';
+import SearchStatus from './SearchStatus';
+import UsersTable from './UsersTable';
 
-const Users = ({ allUsers, onDelete, onBookmark }) => {
-    const PAGE_SIZE = 3;
+const Users = () => {
+    const PAGE_SIZE = 6;
 
     const [currentPage, setCurrentage] = useState(1);
     const [professions, setProfessions] = useState();
     const [selectedProf, setSelectedProf] = useState();
+    const [sort, setSort] = useState({ path: 'name', order: 'asc' });
+    const [users, setUsers] = useState();
+
+    useEffect(() => {
+        api.users.fetchAll().then((data) => setUsers(data));
+    }, []);
+
+    const handleDeleteRow = (id) => {
+        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+    };
+
+    const handleBookmark = (id) => {
+        setUsers((prevUsers) =>
+            prevUsers.map((user) => {
+                if (user._id === id) {
+                    user.bookmark = !user.bookmark;
+                }
+                return user;
+            })
+        );
+    };
 
     useEffect(() => {
         api.professions.fetchAll().then((data) => setProfessions(data));
@@ -23,112 +44,83 @@ const Users = ({ allUsers, onDelete, onBookmark }) => {
         setCurrentage(1);
     }, [selectedProf]);
 
-    const onPageChange = (page) => {
+    const handlePageChange = (page) => {
         setCurrentage(page);
     };
 
-    const onItemSelect = (item) => {
+    const handleItemSelect = (item) => {
         setSelectedProf(item);
+    };
+
+    const handleSort = (sortObject) => {
+        setSort(sortObject);
     };
 
     const clearFilter = () => {
         setSelectedProf(undefined);
     };
 
-    const filteredUsers = selectedProf
-        ? allUsers.filter((user) => user.profession.name === selectedProf.name)
-        : allUsers;
+    if (users) {
+        const filteredUsers = selectedProf
+            ? users.filter((user) => user.profession.name === selectedProf.name)
+            : users;
+        const sortedUsers = orderBy(filteredUsers, sort.path, sort.order);
+        const usersCrop = paginate(sortedUsers, currentPage, PAGE_SIZE);
+        const pagesCount = Math.ceil(sortedUsers.length / PAGE_SIZE);
 
-    const usersCrop = paginate(filteredUsers, currentPage, PAGE_SIZE);
-    const pagesCount = Math.ceil(filteredUsers.length / PAGE_SIZE);
+        if (pagesCount < currentPage && pagesCount > 0) {
+            setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
+        }
 
-    if (pagesCount < currentPage && pagesCount > 0) {
-        setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
-    }
-
-    const usersList = usersCrop.map((user) => (
-        <User
-            key={user._id}
-            {...user}
-            onDelete={onDelete}
-            onBookmark={onBookmark}
-        />
-    ));
-
-    return (
-        <div className="d-flex">
-            {professions ? (
-                <div className="d-flex flex-column flex-shrink-0 m-2">
-                    <GroupList
-                        items={professions}
-                        onItemSelect={onItemSelect}
-                        currentItem={selectedProf}
-                    />
-                    <button
-                        className="btn btn-secondary mt-2"
-                        onClick={clearFilter}
-                    >
-                        Сбросить фильтр
-                    </button>
-                </div>
-            ) : (
-                <Preloader />
-            )}
-
-            <div className="d-flex flex-column flex-grow-1 m-2">
-                <SearchStatus usersNumber={filteredUsers.length} />
-                {allUsers.length > 0 ? (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Имя</th>
-                                <th scope="col">Качества</th>
-                                <th scope="col">Профессия</th>
-                                <th scope="col">Встретился, раз</th>
-                                <th scope="col">Оценка</th>
-                                <th scope="col">
-                                    <span className="badge bg-secondary">
-                                        <i
-                                            className="bi bi-bookmark-fill"
-                                            style={{ fontSize: '1.1rem' }}
-                                        ></i>
-                                    </span>
-                                </th>
-                                <th scope="col">
-                                    <span className="badge bg-secondary">
-                                        <i
-                                            className="bi bi-trash3"
-                                            style={{ fontSize: '1.1rem' }}
-                                        ></i>
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>{usersList}</tbody>
-                    </table>
+        return (
+            <div className="d-flex">
+                {professions ? (
+                    <div className="d-flex flex-column flex-shrink-0 m-2">
+                        <GroupList
+                            items={professions}
+                            onItemSelect={handleItemSelect}
+                            currentItem={selectedProf}
+                        />
+                        <button
+                            className="btn btn-secondary mt-2"
+                            onClick={clearFilter}
+                        >
+                            Сбросить фильтр
+                        </button>
+                    </div>
                 ) : (
-                    ''
+                    <Preloader />
                 )}
-                <div className="d-flex justify-content-center">
-                    {pagesCount > 1 ? (
-                        <Pagination
-                            pagesCount={pagesCount}
-                            currentPage={currentPage}
-                            onPageChange={onPageChange}
+
+                <div className="d-flex flex-column flex-grow-1 m-2">
+                    <SearchStatus usersNumber={filteredUsers.length} />
+                    {users.length > 0 ? (
+                        <UsersTable
+                            users={usersCrop}
+                            onSort={handleSort}
+                            selectedSort={sort}
+                            onDelete={handleDeleteRow}
+                            onBookmark={handleBookmark}
                         />
                     ) : (
                         ''
                     )}
+                    <div className="d-flex justify-content-center">
+                        {pagesCount > 1 ? (
+                            <Pagination
+                                pagesCount={pagesCount}
+                                currentPage={currentPage}
+                                onPageChange={handlePageChange}
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-};
-
-Users.propTypes = {
-    allUsers: PropTypes.array.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onBookmark: PropTypes.func.isRequired
+        );
+    }
+    return <Preloader />;
 };
 
 export default Users;
