@@ -3,7 +3,7 @@ import { orderBy } from 'lodash';
 import { paginate } from '../utils/utils';
 import api from '../api';
 import GroupList from './GroupList';
-import Pagination from '../components/Pagination';
+import Pagination from './Pagination';
 import Preloader from './Preloader';
 import SearchStatus from './SearchStatus';
 import UsersTable from './UsersTable';
