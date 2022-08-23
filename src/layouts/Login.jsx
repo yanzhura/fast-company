@@ -3,6 +3,8 @@ import TextField from '../components/TextField';
 import { validator } from '../utils/validator';
 
 const Login = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -19,6 +21,25 @@ const Login = () => {
             [target.name]: target.value
         }));
     };
+
+    const validate = () => {
+        const errors = validator(formData, validatorConfig);
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const isValid = validate();
+        if (!isValid) return;
+        setFormData({
+            email: '',
+            password: ''
+        });
+        setIsLoggedIn(true);
+    };
+
+    const isValid = Object.keys(errors).length !== 0;
 
     const validatorConfig = {
         email: {
@@ -46,54 +67,39 @@ const Login = () => {
         }
     };
 
-    const validate = () => {
-        const errors = validator(formData, validatorConfig);
-        setErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const isValid = validate();
-        if (!isValid) return;
-        console.log('formData :>> ', formData);
-        setFormData({
-            email: '',
-            password: ''
-        });
-    };
-
-    const isValid = Object.keys(errors).length !== 0;
-
     return (
         <div className="container mt-5">
             <div className="row">
                 <div className="col-md-6 offset-md-3 p-4 shadow">
-                    <h3 className="mb-4">Вход</h3>
-                    <form>
-                        <TextField
-                            label="Эл. почта"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            error={errors.email}
-                        />
-                        <TextField
-                            label="Пароль"
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            error={errors.password}
-                        />
-                        <button
-                            onClick={handleSubmit}
-                            disabled={isValid}
-                            className="btn btn-primary w-100 mx-auto"
-                        >
-                            Вход
-                        </button>
-                    </form>
+                    <h1 className="mb-4">Вход</h1>
+                    {!isLoggedIn ? (
+                        <form>
+                            <TextField
+                                label="Эл. почта"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                error={errors.email}
+                            />
+                            <TextField
+                                label="Пароль"
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                error={errors.password}
+                            />
+                            <button
+                                onClick={handleSubmit}
+                                disabled={isValid}
+                                className="btn btn-primary w-100 mx-auto"
+                            >
+                                Вход
+                            </button>
+                        </form>
+                    ) : (
+                        <h3>Вы вошли</h3>
+                    )}
                 </div>
             </div>
         </div>

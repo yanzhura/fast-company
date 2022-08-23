@@ -27,6 +27,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
                 />
                 {type === 'password' && (
                     <button
+                        type="button"
                         className="btn btn-outline-secondary"
                         onClick={toggleShowPassword}
                     >
@@ -37,7 +38,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
                         ></i>
                     </button>
                 )}
-                {error && <div className="invalid-feedback">{error}</div>}
+                <div className="invalid-feedback">{error}</div>
             </div>
         </div>
     );
