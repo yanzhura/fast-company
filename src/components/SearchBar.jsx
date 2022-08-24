@@ -8,6 +8,13 @@ const SearchBar = ({
 }) => {
     return (
         <div className="input-group input-group-sm">
+            <input
+                type="text"
+                className="form-control"
+                placeholder="Поиск по имени пользователя"
+                value={filterUsername}
+                onChange={handleFilterUsername}
+            />
             <button
                 className="btn btn-secondary"
                 type="button"
@@ -16,13 +23,6 @@ const SearchBar = ({
             >
                 <i className="bi bi-x-lg"></i>
             </button>
-            <input
-                type="text"
-                className="form-control"
-                placeholder="Фильтровать по имени пользователя"
-                value={filterUsername}
-                onChange={handleFilterUsername}
-            />
         </div>
     );
 };

@@ -17,7 +17,7 @@ const SearchStatus = ({ usersNumber }) => {
         : 'Никто с тобой не тусанёт';
 
     return (
-        <h3>
+        <h4>
             <div
                 className={
                     'badge ' + (usersNumber ? 'bg-primary' : 'bg-danger')
@@ -25,7 +25,7 @@ const SearchStatus = ({ usersNumber }) => {
             >
                 {statusText}
             </div>
-        </h3>
+        </h4>
     );
 };
 

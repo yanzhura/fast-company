@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { orderBy } from 'lodash';
 import { paginate } from '../utils/utils';
 import api from '../api';
-import GroupList from './GroupList';
 import Pagination from './Pagination';
 import Preloader from './Preloader';
 import SearchStatus from './SearchStatus';
 import UsersTable from './UsersTable';
 import SearchBar from './SearchBar';
+import GroupListSelect from './GroupListSelect';
 
 const Users = () => {
     const PAGE_SIZE = 6;
@@ -16,7 +16,6 @@ const Users = () => {
     const [professions, setProfessions] = useState();
     const [filterProfession, setFilterProfession] = useState();
     const [filterUsername, setFilterUsername] = useState('');
-    const [filter, setFilter] = useState();
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
     const [users, setUsers] = useState();
 
@@ -25,16 +24,24 @@ const Users = () => {
     }, []);
 
     useEffect(() => {
-        if (filterProfession) {
-            setFilterUsername('');
-            setFilter('profession');
-        } else if (filterUsername) {
-            setFilterProfession();
-            setFilter('name');
-        } else {
-            setFilter();
+        if (filterProfession && filterProfession !== 'DEFAULT') {
+            clearFilterUsername();
         }
-    }, [filterProfession, filterUsername]);
+    }, [filterProfession]);
+
+    useEffect(() => {
+        if (filterUsername) {
+            clearFilterProfession();
+        }
+    }, [filterUsername]);
+
+    useEffect(() => {
+        api.professions.fetchAll().then((data) => setProfessions(data));
+    }, []);
+
+    useEffect(() => {
+        setCurrentage(1);
+    }, [filterProfession]);
 
     const handleDeleteRow = (id) => {
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
@@ -51,14 +58,6 @@ const Users = () => {
         );
     };
 
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfessions(data));
-    }, []);
-
-    useEffect(() => {
-        setCurrentage(1);
-    }, [filterProfession]);
-
     const handlePageChange = (page) => {
         setCurrentage(page);
     };
@@ -72,8 +71,7 @@ const Users = () => {
     };
 
     const clearFilterProfession = () => {
-        setFilterProfession();
-        setFilter();
+        setFilterProfession('DEFAULT');
     };
 
     const handleFilterUsername = (event) => {
@@ -83,18 +81,14 @@ const Users = () => {
 
     const clearFilterUsername = () => {
         setFilterUsername('');
-        setFilter();
     };
 
-    const filterUsers = (users, filterType) => {
-        console.log('filter :>> ', filter);
-        console.log('filterProfession :>> ', filterProfession);
-        console.log('filterUsername :>> ', filterUsername);
-        if (filterType === 'profession') {
+    const filterUsers = (users) => {
+        if (filterProfession && filterProfession !== 'DEFAULT') {
             return users.filter(
-                (user) => user.profession.name === filterProfession.name
+                (user) => user.profession.name === filterProfession
             );
-        } else if (filterType === 'name') {
+        } else if (filterUsername) {
             return users.filter((user) =>
                 user.name.toLowerCase().includes(filterUsername)
             );
@@ -104,7 +98,7 @@ const Users = () => {
     };
 
     if (users) {
-        const filteredUsers = filterUsers(users, filter);
+        const filteredUsers = filterUsers(users);
         const sortedUsers = orderBy(filteredUsers, sort.path, sort.order);
         const usersCrop = paginate(sortedUsers, currentPage, PAGE_SIZE);
         const pagesCount = Math.ceil(sortedUsers.length / PAGE_SIZE);
@@ -114,31 +108,21 @@ const Users = () => {
         }
 
         return (
-            <div className="container-fluid m-2">
-                <div className="row">
-                    <SearchStatus usersNumber={filteredUsers.length} />
-                </div>
+            <div className="container mt-5">
                 <div className="row">
                     <div className="col-3">
-                        {professions ? (
-                            <div>
-                                <GroupList
-                                    items={professions}
-                                    onItemSelect={handleItemSelect}
-                                    currentItem={filterProfession}
-                                />
-                                <button
-                                    className="btn btn-secondary mt-2"
-                                    onClick={clearFilterProfession}
-                                >
-                                    Сбросить фильтр
-                                </button>
-                            </div>
-                        ) : (
-                            <Preloader />
-                        )}
+                        <SearchStatus usersNumber={filteredUsers.length} />
                     </div>
-                    <div className="col-9">
+                    <div className="col-3"></div>
+                    <div className="col-3">
+                        <GroupListSelect
+                            items={professions}
+                            onItemSelect={handleItemSelect}
+                            currentItem={filterProfession}
+                            clearItem={clearFilterProfession}
+                        />
+                    </div>
+                    <div className="col-3">
                         <SearchBar
                             filterUsername={filterUsername}
                             handleFilterUsername={handleFilterUsername}
@@ -159,8 +143,8 @@ const Users = () => {
                         ''
                     )}
                 </div>
-                <div className="row justify-content-center">
-                    <div className="col-1">
+                <div className="row">
+                    <div className="col  d-flex justify-content-end">
                         {pagesCount > 1 ? (
                             <Pagination
                                 pagesCount={pagesCount}
@@ -175,7 +159,13 @@ const Users = () => {
             </div>
         );
     }
-    return <Preloader />;
+    return (
+        <div className="container mt-5">
+            <div className="row d-flex justify-content-center">
+                <Preloader />
+            </div>
+        </div>
+    );
 };
 
 export default Users;
