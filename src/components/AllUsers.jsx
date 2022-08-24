@@ -8,11 +8,11 @@ import SearchStatus from './SearchStatus';
 import UsersTable from './UsersTable';
 import SearchBar from './SearchBar';
 import GroupListSelect from './GroupListSelect';
+import PageSizeSelector from './PageSizeSelector';
 
 const Users = () => {
-    const PAGE_SIZE = 6;
-
     const [currentPage, setCurrentage] = useState(1);
+    const [pageSize, setPageSize] = useState(6);
     const [professions, setProfessions] = useState();
     const [filterProfession, setFilterProfession] = useState();
     const [filterUsername, setFilterUsername] = useState('');
@@ -97,11 +97,23 @@ const Users = () => {
         }
     };
 
+    const handlePageSizeChange = (newPageSize) => {
+        setPageSize(parseInt(newPageSize));
+    };
+
     if (users) {
         const filteredUsers = filterUsers(users);
         const sortedUsers = orderBy(filteredUsers, sort.path, sort.order);
-        const usersCrop = paginate(sortedUsers, currentPage, PAGE_SIZE);
-        const pagesCount = Math.ceil(sortedUsers.length / PAGE_SIZE);
+        let usersCrop;
+        let pagesCount;
+
+        if (pageSize !== 0) {
+            usersCrop = paginate(sortedUsers, currentPage, pageSize);
+            pagesCount = Math.ceil(sortedUsers.length / pageSize);
+        } else {
+            usersCrop = users;
+            pagesCount = 1;
+        }
 
         if (pagesCount < currentPage && pagesCount > 0) {
             setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
@@ -109,7 +121,7 @@ const Users = () => {
 
         return (
             <div className="container mt-5">
-                <div className="row">
+                <div className="row mb-2">
                     <div className="col-3">
                         <SearchStatus usersNumber={filteredUsers.length} />
                     </div>
@@ -144,7 +156,7 @@ const Users = () => {
                     )}
                 </div>
                 <div className="row">
-                    <div className="col  d-flex justify-content-end">
+                    <div className="col-10">
                         {pagesCount > 1 ? (
                             <Pagination
                                 pagesCount={pagesCount}
@@ -154,6 +166,12 @@ const Users = () => {
                         ) : (
                             ''
                         )}
+                    </div>
+                    <div className="col-2">
+                        <PageSizeSelector
+                            pageSize={pageSize}
+                            onPageSizeChange={handlePageSizeChange}
+                        />
                     </div>
                 </div>
             </div>
