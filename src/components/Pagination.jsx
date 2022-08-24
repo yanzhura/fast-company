@@ -6,7 +6,7 @@ const Pagination = ({ pagesCount, currentPage, onPageChange }) => {
     const pagesArray = range(1, pagesCount + 1);
 
     return (
-        <nav className="m-2">
+        <nav>
             <ul className="pagination">
                 {pagesArray.map((page) => (
                     <li

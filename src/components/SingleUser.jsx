@@ -16,7 +16,9 @@ const SingleUser = ({ uid }) => {
 
     return (
         <div className="m-2">
-            <div>{userData ? <UserCard {...userData} /> : <UserCardPreloader />}</div>
+            <div>
+                {userData ? <UserCard {...userData} /> : <UserCardPreloader />}
+            </div>
         </div>
     );
 };

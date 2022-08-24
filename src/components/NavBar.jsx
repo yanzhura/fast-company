@@ -31,7 +31,15 @@ const NavBar = () => {
         );
     });
 
-    return <ul className="nav nav-pills m-2">{navLinks}</ul>;
+    return (
+        <div className="shadow p-3">
+            <h1 className="fw-bolder fst-italic text-secondary">
+                Fast Company
+            </h1>
+            <hr />
+            <ul className="nav nav-pills">{navLinks}</ul>
+        </div>
+    );
 };
 
 export default NavBar;
