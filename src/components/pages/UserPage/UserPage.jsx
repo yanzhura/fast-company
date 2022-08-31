@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import api from '../api';
-// import Preloader from './Preloader';
-import UserCard from './UserCard';
-import UserCardPreloader from './UserCardPreloader';
+import api from '../../../api';
+import UserCard from '../../ui/UserCard';
+import UserCardPreloader from '../../ui/UserCardPreloader';
 
-const SingleUser = ({ uid }) => {
+const UserPage = ({ uid }) => {
     const [userData, setUserData] = useState(undefined);
 
     useEffect(() => {
@@ -23,8 +22,8 @@ const SingleUser = ({ uid }) => {
     );
 };
 
-SingleUser.propTypes = {
+UserPage.propTypes = {
     uid: PropTypes.string.isRequired
 };
 
-export default SingleUser;
+export default UserPage;

@@ -9,7 +9,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
     };
 
-    const getinputClasses = () => {
+    const getInputClasses = () => {
         return 'form-control' + (error ? ' is-invalid' : '');
     };
 
@@ -18,7 +18,7 @@ const TextField = ({ label, type, name, value, onChange, error }) => {
             <label htmlFor={name}>{label}</label>
             <div className="input-group has-validation">
                 <input
-                    className={getinputClasses()}
+                    className={getInputClasses()}
                     type={showPassword ? '' : type}
                     id={name}
                     name={name}
