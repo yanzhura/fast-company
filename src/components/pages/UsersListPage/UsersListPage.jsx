@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { orderBy } from 'lodash';
-import { paginate } from '../utils/utils';
-import api from '../api';
-import Pagination from './Pagination';
-import Preloader from './Preloader';
-import SearchStatus from './SearchStatus';
-import UsersTable from './UsersTable';
-import SearchBar from './SearchBar';
-import GroupListSelect from './GroupListSelect';
-import PageSizeSelector from './PageSizeSelector';
+import { paginate } from '../../../utils/utils';
+import api from '../../../api';
+import Pagination from '../../common/Pagination';
+import Preloader from '../../common/Preloader';
+import SearchStatus from '../../ui/SearchStatus';
+import UsersTable from '../../ui/UsersTable';
+import SearchBar from '../../ui/SearchBar';
+import SelectInput from '../../common/form/SelectInput';
+import PageSizeSelector from '../../ui/PageSizeSelector';
 
-const Users = () => {
+const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
     const [professions, setProfessions] = useState();
@@ -62,8 +62,8 @@ const Users = () => {
         setCurrentage(page);
     };
 
-    const handleItemSelect = (item) => {
-        setFilterProfession(item);
+    const handleItemSelect = ({ target }) => {
+        setFilterProfession(target.value);
     };
 
     const handleSort = (sortObject) => {
@@ -86,7 +86,7 @@ const Users = () => {
     const filterUsers = (users) => {
         if (filterProfession && filterProfession !== 'DEFAULT') {
             return users.filter(
-                (user) => user.profession.name === filterProfession
+                (user) => user.profession._id === filterProfession
             );
         } else if (filterUsername) {
             return users.filter((user) =>
@@ -127,11 +127,12 @@ const Users = () => {
                     </div>
                     <div className="col-3"></div>
                     <div className="col-3">
-                        <GroupListSelect
-                            items={professions}
-                            onItemSelect={handleItemSelect}
+                        <SelectInput
+                            options={professions}
+                            tip="Выберите профессию..."
                             currentItem={filterProfession}
-                            clearItem={clearFilterProfession}
+                            onItemSelect={handleItemSelect}
+                            onClear={clearFilterProfession}
                         />
                     </div>
                     <div className="col-3">
@@ -186,4 +187,4 @@ const Users = () => {
     );
 };
 
-export default Users;
+export default UsersListPage;

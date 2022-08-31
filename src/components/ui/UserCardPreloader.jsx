@@ -1,6 +1,6 @@
 import React from 'react';
-import userPicture from '../assets/user_picture.png';
-import BackButton from './BackButton';
+import userPicture from '../../assets/user_picture.png';
+import BackButton from '../common/BackButton';
 
 const UserCardPreloader = () => {
     return (

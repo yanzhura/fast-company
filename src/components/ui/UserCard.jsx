@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import userPicture from '../assets/user_picture.png';
+import userPicture from '../../assets/user_picture.png';
 import Qualities from './Qualities';
-import BackButton from './BackButton';
+import BackButton from '../common/BackButton';
 
 const UserCard = ({
     name,
