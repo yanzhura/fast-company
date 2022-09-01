@@ -14,7 +14,7 @@ const UserPage = ({ uid }) => {
     }, []);
 
     return (
-        <div className="m-2">
+        <div>
             <div>
                 {userData ? (
                     <UserCard {...userData} uid={uid} />

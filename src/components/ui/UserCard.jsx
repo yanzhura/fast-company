@@ -17,7 +17,7 @@ const UserCard = ({
     const bookmarkStyle = bookmark ? 'bi-bookmark-fill' : 'bi-bookmark';
 
     return (
-        <div className="card" style={{ width: '22rem' }}>
+        <div className="card m-4" style={{ width: '25rem' }}>
             <div className="card-header d-flex justify-content-between">
                 <h3>{name}</h3>
                 <i
@@ -57,15 +57,17 @@ const UserCard = ({
                 <Qualities qualities={qualities} />
             </div>
             <div className="card-footer">
-                <BackButton title="К списку пользователей" path="/users" />
-                <Link to={`/users/${uid}/edit`}>
-                    <button
-                        type="button"
-                        className="btn btn-outline-secondary btn-sm"
-                    >
-                        Редактировать
-                    </button>
-                </Link>
+                <div className="d-flex justify-content-between">
+                    <BackButton title="К списку пользователей" path="/users" />
+                    <Link to={`/users/${uid}/edit`}>
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm"
+                        >
+                            <i className="bi bi-pencil-fill"></i>
+                        </button>
+                    </Link>
+                </div>
             </div>
         </div>
     );

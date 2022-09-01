@@ -3,7 +3,7 @@ import userPicture from '../../assets/user_picture.png';
 
 const UserCardPreloader = () => {
     return (
-        <div className="card" style={{ width: '20rem' }}>
+        <div className="card m-4" style={{ width: '25rem' }}>
             <div className="card-header placeholder-glow d-flex justify-content-between">
                 <h3 className="placeholder col-6"></h3>
                 <h3 className="placeholder col-1"></h3>
