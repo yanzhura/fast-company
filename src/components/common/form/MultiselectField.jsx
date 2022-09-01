@@ -9,7 +9,8 @@ const MultiselectField = ({
     onChange,
     value,
     valueProperty,
-    dataProperty
+    dataProperty,
+    error
 }) => {
     const isLoading = options.length === 0;
 
@@ -46,6 +47,7 @@ const MultiselectField = ({
                 value={convertData(value)}
                 onChange={handleChange}
             />
+            {error && <div className="text-danger">{error}</div>}
         </div>
     );
 };
@@ -57,7 +59,8 @@ MultiselectField.propTypes = {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.array,
     valueProperty: PropTypes.string.isRequired,
-    dataProperty: PropTypes.string.isRequired
+    dataProperty: PropTypes.string.isRequired,
+    error: PropTypes.string
 };
 
 MultiselectField.defaultProps = {

@@ -1,6 +1,5 @@
 import React from 'react';
 import userPicture from '../../assets/user_picture.png';
-import BackButton from '../common/BackButton';
 
 const UserCardPreloader = () => {
     return (
@@ -49,7 +48,9 @@ const UserCardPreloader = () => {
                 </div>
             </div>
             <div className="card-footer">
-                <BackButton title="К списку пользователей" path="/users" />
+                <div className="card-text placeholder-glow">
+                    <span className="placeholder col-12"></span>
+                </div>
             </div>
         </div>
     );

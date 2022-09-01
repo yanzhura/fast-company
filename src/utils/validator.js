@@ -6,6 +6,8 @@ export function validator(data, config) {
             case 'isRequired': {
                 if (typeof data === 'boolean') {
                     statusValidate = !data;
+                } else if (Array.isArray(data)) {
+                    statusValidate = data.length === 0;
                 } else if (typeof data === 'object') {
                     statusValidate = !data;
                 } else {
