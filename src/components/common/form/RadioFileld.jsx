@@ -2,6 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const RadioFileld = ({ options, label, name, value, onChange }) => {
+    const handleChange = ({ target }) => {
+        onChange({ name, value: target.value });
+    };
+
     return (
         <div className="mb-4">
             <div>{label}</div>
@@ -16,7 +20,7 @@ const RadioFileld = ({ options, label, name, value, onChange }) => {
                         name={name}
                         value={option.value}
                         id={option.name + '_' + option.value}
-                        onChange={onChange}
+                        onChange={handleChange}
                         checked={option.value === value}
                     />
                     <label

@@ -16,7 +16,11 @@ const UserPage = ({ uid }) => {
     return (
         <div className="m-2">
             <div>
-                {userData ? <UserCard {...userData} /> : <UserCardPreloader />}
+                {userData ? (
+                    <UserCard {...userData} uid={uid} />
+                ) : (
+                    <UserCardPreloader />
+                )}
             </div>
         </div>
     );

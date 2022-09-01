@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import userPicture from '../../assets/user_picture.png';
 import Qualities from './Qualities';
 import BackButton from '../common/BackButton';
+import { Link } from 'react-router-dom';
 
 const UserCard = ({
     name,
@@ -10,7 +11,8 @@ const UserCard = ({
     profession,
     completedMeetings,
     rate,
-    bookmark
+    bookmark,
+    uid
 }) => {
     const bookmarkStyle = bookmark ? 'bi-bookmark-fill' : 'bi-bookmark';
 
@@ -56,6 +58,14 @@ const UserCard = ({
             </div>
             <div className="card-footer">
                 <BackButton title="К списку пользователей" path="/users" />
+                <Link to={`/users/${uid}/edit`}>
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-sm"
+                    >
+                        Редактировать
+                    </button>
+                </Link>
             </div>
         </div>
     );
@@ -67,7 +77,8 @@ UserCard.propTypes = {
     profession: PropTypes.object.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
-    bookmark: PropTypes.bool.isRequired
+    bookmark: PropTypes.bool.isRequired,
+    uid: PropTypes.string.isRequired
 };
 
 export default UserCard;

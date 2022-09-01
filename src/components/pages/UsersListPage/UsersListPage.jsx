@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { orderBy } from 'lodash';
-import { paginate } from '../../../utils/utils';
+import { paginate, objectToArray } from '../../../utils/utils';
 import api from '../../../api';
 import Pagination from '../../common/Pagination';
 import Preloader from '../../common/Preloader';
 import SearchStatus from '../../ui/SearchStatus';
 import UsersTable from '../../ui/UsersTable';
 import SearchBar from '../../ui/SearchBar';
-import SelectInput from '../../common/form/SelectInput';
+import SelectField from '../../common/form/SelectField';
 import PageSizeSelector from '../../ui/PageSizeSelector';
 
 const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
-    const [professions, setProfessions] = useState();
-    const [filterProfession, setFilterProfession] = useState();
+    const [professions, setProfessions] = useState([]);
+    const [filterProfession, setFilterProfession] = useState('');
     const [filterUsername, setFilterUsername] = useState('');
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
     const [users, setUsers] = useState();
 
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
+        api.professions
+            .fetchAll()
+            .then((data) => setProfessions(objectToArray(data)));
     }, []);
 
     useEffect(() => {
@@ -34,10 +37,6 @@ const UsersListPage = () => {
             clearFilterProfession();
         }
     }, [filterUsername]);
-
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfessions(data));
-    }, []);
 
     useEffect(() => {
         setCurrentage(1);
@@ -62,8 +61,8 @@ const UsersListPage = () => {
         setCurrentage(page);
     };
 
-    const handleItemSelect = ({ target }) => {
-        setFilterProfession(target.value);
+    const handleItemSelect = ({ value }) => {
+        setFilterProfession(value);
     };
 
     const handleSort = (sortObject) => {
@@ -71,7 +70,7 @@ const UsersListPage = () => {
     };
 
     const clearFilterProfession = () => {
-        setFilterProfession('DEFAULT');
+        setFilterProfession('');
     };
 
     const handleFilterUsername = (event) => {
@@ -84,9 +83,9 @@ const UsersListPage = () => {
     };
 
     const filterUsers = (users) => {
-        if (filterProfession && filterProfession !== 'DEFAULT') {
+        if (filterProfession) {
             return users.filter(
-                (user) => user.profession._id === filterProfession
+                (user) => user.profession._id === filterProfession._id
             );
         } else if (filterUsername) {
             return users.filter((user) =>
@@ -127,11 +126,12 @@ const UsersListPage = () => {
                     </div>
                     <div className="col-3"></div>
                     <div className="col-3">
-                        <SelectInput
+                        <SelectField
                             options={professions}
+                            name="profession"
                             tip="Выберите профессию..."
-                            currentItem={filterProfession}
-                            onItemSelect={handleItemSelect}
+                            value={filterProfession}
+                            onChange={handleItemSelect}
                             onClear={clearFilterProfession}
                         />
                     </div>

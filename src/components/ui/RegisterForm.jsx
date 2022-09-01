@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/TextField';
 import { validator } from '../../utils/validator';
+import { objectToArray } from '../../utils/utils';
 import api from '../../api';
-import SelectInput from '../common/form/SelectInput';
-import Preloader from '../common/Preloader';
+import SelectField from '../common/form/SelectField';
 import RadioFileld from '../common/form/RadioFileld';
 import MultiselectField from '../common/form/MultiselectField';
 import CheckboxField from '../common/form/CheckboxField';
@@ -16,26 +16,30 @@ const RegisterForm = () => {
         password: '',
         profession: '',
         gender: 'male',
-        qualities: {},
+        qualities: [],
         license: false
     });
     const [errors, setErrors] = useState({});
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState({});
+    const [professions, setProfessions] = useState([]);
+    const [qualities, setQualities] = useState([]);
 
     useEffect(() => {
         validate();
     }, [formData]);
 
     useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfessions(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
+        api.professions
+            .fetchAll()
+            .then((data) => setProfessions(objectToArray(data)));
+        api.qualities
+            .fetchAll()
+            .then((data) => setQualities(objectToArray(data)));
     }, []);
 
-    const handleChange = ({ target }) => {
+    const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            [target.name]: target.value
+            [name]: value
         }));
     };
 
@@ -55,7 +59,7 @@ const RegisterForm = () => {
             password: '',
             profession: '',
             gender: 'male',
-            qualities: {},
+            qualities: [],
             license: false
         });
         setIsLoggedIn(true);
@@ -99,6 +103,12 @@ const RegisterForm = () => {
         }
     };
 
+    const genders = [
+        { name: 'Мужской', value: 'male' },
+        { name: 'Женский', value: 'female' },
+        { name: 'Другой', value: 'other' }
+    ];
+
     return (
         <>
             {!isLoggedIn ? (
@@ -118,27 +128,17 @@ const RegisterForm = () => {
                         onChange={handleChange}
                         error={errors.password}
                     />
-                    {professions ? (
-                        <SelectInput
-                            options={professions}
-                            tip="Профессия..."
-                            label="Укажите свою профессию"
-                            name="profession"
-                            onItemSelect={handleChange}
-                            currentItem={formData.name}
-                            error={errors.profession}
-                        />
-                    ) : (
-                        <div className="d-flex justify-content-center mb-4">
-                            <Preloader />
-                        </div>
-                    )}
+                    <SelectField
+                        options={professions}
+                        label="Укажите свою профессию"
+                        name="profession"
+                        tip="Профессия..."
+                        onChange={handleChange}
+                        value={formData.profession}
+                        error={errors.profession}
+                    />
                     <RadioFileld
-                        options={[
-                            { name: 'Мужской', value: 'male' },
-                            { name: 'Женский', value: 'female' },
-                            { name: 'Другой', value: 'other' }
-                        ]}
+                        options={genders}
                         label="Укажите пол"
                         name="gender"
                         value={formData.gender}
@@ -148,6 +148,7 @@ const RegisterForm = () => {
                         options={qualities}
                         label="Укажите свои качества"
                         name="qualities"
+                        value={formData.qualities}
                         onChange={handleChange}
                     />
                     <CheckboxField

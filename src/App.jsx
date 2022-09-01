@@ -5,6 +5,7 @@ import Main from './layouts/Main';
 import NavBar from './components/ui/NavBar';
 import NotFound from './components/pages/NotFound';
 import Users from './layouts/Users';
+import UserEdit from './components/pages/UserEdit';
 
 const App = () => {
     return (
@@ -13,7 +14,8 @@ const App = () => {
             <Switch>
                 <Route path="/" exact component={Main} />
                 <Route path="/login/:type?" component={Login} />
-                <Route path="/users/:uid?" component={Users} />
+                <Route path="/users/:uid?" exact component={Users} />
+                <Route path="/users/:uid?/edit" component={UserEdit} />
                 <Route path="/not_found" component={NotFound} />
                 <Redirect to="/not_found" />
             </Switch>

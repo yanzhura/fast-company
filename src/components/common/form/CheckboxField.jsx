@@ -7,7 +7,7 @@ const CheckboxField = ({ name, value, onChange, error, children }) => {
     };
 
     const handleChange = () => {
-        onChange({ target: { name, value: !value } });
+        onChange({ name, value: !value });
     };
 
     return (
