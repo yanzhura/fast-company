@@ -17,10 +17,10 @@ const LoginForm = () => {
         validate();
     }, [formData]);
 
-    const handleChange = ({ target }) => {
+    const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            [target.name]: target.value
+            [name]: value
         }));
     };
 

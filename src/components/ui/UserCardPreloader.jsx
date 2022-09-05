@@ -1,10 +1,9 @@
 import React from 'react';
 import userPicture from '../../assets/user_picture.png';
-import BackButton from '../common/BackButton';
 
 const UserCardPreloader = () => {
     return (
-        <div className="card" style={{ width: '20rem' }}>
+        <div className="card m-4" style={{ width: '25rem' }}>
             <div className="card-header placeholder-glow d-flex justify-content-between">
                 <h3 className="placeholder col-6"></h3>
                 <h3 className="placeholder col-1"></h3>
@@ -49,7 +48,9 @@ const UserCardPreloader = () => {
                 </div>
             </div>
             <div className="card-footer">
-                <BackButton title="К списку пользователей" path="/users" />
+                <div className="card-text placeholder-glow">
+                    <span className="placeholder col-12"></span>
+                </div>
             </div>
         </div>
     );

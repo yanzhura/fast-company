@@ -1,45 +1,58 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SelectInput = ({
+const SelectField = ({
     options,
     tip,
     name,
     label,
-    onItemSelect,
+    onChange,
     onClear,
-    currentItem,
+    value,
     error,
     valueProperty,
     dataProperty
 }) => {
-    let data = [];
-    if (!Array.isArray(options)) {
-        data = Object.keys(options).map((key) => options[key]);
-    } else {
-        data = options;
-    }
-
     const getInputClasses = () => {
         return 'form-select' + (error ? ' is-invalid' : '');
+    };
+
+    if (options.length === 0) {
+        value = 'loading';
+    }
+
+    const handleChange = ({ target }) => {
+        const selectedObject = options.find(
+            (option) => option[valueProperty] === target.value
+        );
+        onChange({ name, value: selectedObject });
     };
 
     return (
         <div className="mb-4">
             {label ? <div>{label}</div> : ''}
-            <div className="input-group">
+            <div className="input-group input-group-sm">
                 <select
                     className={getInputClasses()}
                     name={name}
-                    onChange={onItemSelect}
-                    value={currentItem}
-                    defaultValue={'DEFAULT'}
+                    onChange={handleChange}
+                    value={value[valueProperty] || tip}
                 >
-                    <option value="DEFAULT" disabled>
-                        {tip}
-                    </option>
+                    {tip ? (
+                        <option value={tip} disabled>
+                            {tip}
+                        </option>
+                    ) : (
+                        ''
+                    )}
 
-                    {data.map((item) => (
+                    {options.length === 0 && (
+                        <option value="loading" disabled>
+                            Загрузка...
+                        </option>
+                    )}
+
+                    {options.map((item) => (
                         <option
                             key={item[valueProperty]}
                             value={item[valueProperty]}
@@ -65,26 +78,26 @@ const SelectInput = ({
     );
 };
 
-SelectInput.propTypes = {
+SelectField.propTypes = {
     options: PropTypes.oneOfType([
         PropTypes.object.isRequired,
         PropTypes.array.isRequired
     ]),
-    tip: PropTypes.string.isRequired,
+    tip: PropTypes.string,
     label: PropTypes.string,
     name: PropTypes.string,
-    onItemSelect: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
     onClear: PropTypes.func,
-    currentItem: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     error: PropTypes.string,
     valueProperty: PropTypes.string.isRequired,
     dataProperty: PropTypes.string.isRequired
 };
 
-SelectInput.defaultProps = {
+SelectField.defaultProps = {
     valueProperty: '_id',
     dataProperty: 'name',
     name: 'select'
 };
 
-export default SelectInput;
+export default SelectField;

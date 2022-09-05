@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import userPicture from '../../assets/user_picture.png';
 import Qualities from './Qualities';
 import BackButton from '../common/BackButton';
+import { Link } from 'react-router-dom';
 
 const UserCard = ({
     name,
@@ -10,12 +11,13 @@ const UserCard = ({
     profession,
     completedMeetings,
     rate,
-    bookmark
+    bookmark,
+    uid
 }) => {
     const bookmarkStyle = bookmark ? 'bi-bookmark-fill' : 'bi-bookmark';
 
     return (
-        <div className="card" style={{ width: '22rem' }}>
+        <div className="card m-4" style={{ width: '25rem' }}>
             <div className="card-header d-flex justify-content-between">
                 <h3>{name}</h3>
                 <i
@@ -55,7 +57,17 @@ const UserCard = ({
                 <Qualities qualities={qualities} />
             </div>
             <div className="card-footer">
-                <BackButton title="К списку пользователей" path="/users" />
+                <div className="d-flex justify-content-between">
+                    <BackButton title="К списку пользователей" path="/users" />
+                    <Link to={`/users/${uid}/edit`}>
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm"
+                        >
+                            <i className="bi bi-pencil-fill"></i>
+                        </button>
+                    </Link>
+                </div>
             </div>
         </div>
     );
@@ -67,7 +79,8 @@ UserCard.propTypes = {
     profession: PropTypes.object.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
-    bookmark: PropTypes.bool.isRequired
+    bookmark: PropTypes.bool.isRequired,
+    uid: PropTypes.string.isRequired
 };
 
 export default UserCard;
