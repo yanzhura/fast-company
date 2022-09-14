@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import api from '../../../api';
-import UserCard from '../../ui/UserCard';
+import UserCard from './UserCard';
 import UserCardPreloader from '../../ui/UserCardPreloader';
+import UserCommentsForm from './UserCommentsForm';
+import UserComments from './UserComments';
 
 const UserPage = ({ uid }) => {
     const [userData, setUserData] = useState(undefined);
@@ -17,7 +19,17 @@ const UserPage = ({ uid }) => {
         <div>
             <div>
                 {userData ? (
-                    <UserCard {...userData} uid={uid} />
+                    <div className="container mt-5">
+                        <div className="row gutters-sm">
+                            <div className="col-md-4 mb-3">
+                                <UserCard {...userData} uid={uid} />
+                            </div>
+                            <div className="col-md-8">
+                                <UserCommentsForm />
+                                <UserComments />
+                            </div>
+                        </div>
+                    </div>
                 ) : (
                     <UserCardPreloader />
                 )}
