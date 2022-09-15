@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import api from '../../../api';
 import UserCard from './UserCard';
 import UserCardPreloader from '../../ui/UserCardPreloader';
-import UserCommentsForm from './UserCommentsForm';
-import UserComments from './UserComments';
+import CommentsList from './CommentsList';
 
 const UserPage = ({ uid }) => {
     const [userData, setUserData] = useState(undefined);
@@ -25,8 +24,7 @@ const UserPage = ({ uid }) => {
                                 <UserCard {...userData} uid={uid} />
                             </div>
                             <div className="col-md-8">
-                                <UserCommentsForm />
-                                <UserComments />
+                                <CommentsList />
                             </div>
                         </div>
                     </div>

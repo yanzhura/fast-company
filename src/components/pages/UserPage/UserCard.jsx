@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-// import userPicture from '../../../assets/user_picture.png';
-import Qualities from '../../ui/Qualities';
-// import BackButton from '../../common/BackButton';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import Qualities from '../../ui/Qualities';
+import RandomAvatar from '../../common/RandomAvatar';
 
 const UserCard = ({
     name,
@@ -11,11 +10,9 @@ const UserCard = ({
     profession,
     completedMeetings,
     rate,
-    // bookmark
-    uid
+    uid,
+    sex
 }) => {
-    // const bookmarkStyle = bookmark ? 'bi-bookmark-fill' : 'bi-bookmark';
-
     return (
         <>
             <div className="card mb-3">
@@ -26,17 +23,7 @@ const UserCard = ({
                         </button>
                     </Link>
                     <div className="d-flex flex-column align-items-center text-center position-relative">
-                        <img
-                            src={`https://avatars.dicebear.com/api/avataaars/${(
-                                Math.random() + 1
-                            )
-                                .toString(36)
-                                .substring(7)}.svg`}
-                            className="rounded-circle shadow-1-strong me-3"
-                            alt="avatar"
-                            width="65"
-                            height="65"
-                        />
+                        <RandomAvatar size={80} uid={uid} gender={sex} />
                         <div className="mt-3">
                             <h4>{name}</h4>
                             <p className="text-secondary mb-1">
@@ -78,62 +65,6 @@ const UserCard = ({
             </div>
         </>
     );
-
-    // return (
-    //     <div className="card m-4" style={{ width: '25rem' }}>
-    //         <div className="card-header d-flex justify-content-between">
-    //             <h3>{name}</h3>
-    //             <i
-    //                 className={`bi ${bookmarkStyle}`}
-    //                 style={{ fontSize: '1.5rem' }}
-    //             ></i>
-    //         </div>
-    //         <img src={userPicture} className="card-img-top" alt="User" />
-    //         <div className="card-body">
-    //             <div className="container">
-    //                 <div className="row">
-    //                     <div className="col">
-    //                         <p className="card-text text-muted">Профессия</p>
-    //                     </div>
-    //                     <div className="col">
-    //                         <p className="card-text">{profession.name}</p>
-    //                     </div>
-    //                 </div>
-    //                 <div className="row">
-    //                     <div className="col">
-    //                         <p className="card-text text-muted">Встречи</p>
-    //                     </div>
-    //                     <div className="col">
-    //                         <p className="card-text">{completedMeetings}</p>
-    //                     </div>
-    //                 </div>
-    //                 <div className="row">
-    //                     <div className="col">
-    //                         <p className="card-text text-muted">Рейтинг</p>
-    //                     </div>
-    //                     <div className="col">
-    //                         <p className="card-text">{rate}</p>
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //             <br />
-    //             <Qualities qualities={qualities} />
-    //         </div>
-    //         <div className="card-footer">
-    //             <div className="d-flex justify-content-between">
-    //                 <BackButton title="К списку пользователей" path="/users" />
-    //                 <Link to={`/users/${uid}/edit`}>
-    //                     <button
-    //                         type="button"
-    //                         className="btn btn-outline-secondary btn-sm"
-    //                     >
-    //                         <i className="bi bi-pencil-fill"></i>
-    //                     </button>
-    //                 </Link>
-    //             </div>
-    //         </div>
-    //     </div>
-    // );
 };
 
 UserCard.propTypes = {
@@ -143,7 +74,8 @@ UserCard.propTypes = {
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
     bookmark: PropTypes.bool.isRequired,
-    uid: PropTypes.string.isRequired
+    uid: PropTypes.string.isRequired,
+    sex: PropTypes.oneOf(['male', 'female', 'other']).isRequired
 };
 
 export default UserCard;
