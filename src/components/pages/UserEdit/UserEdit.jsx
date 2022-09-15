@@ -3,11 +3,13 @@ import { useParams, useHistory } from 'react-router-dom';
 import api from '../../../api';
 import { objectToArray } from '../../../utils/utils';
 import { validator } from '../../../utils/validator';
+import BackButton from '../../common/BackButton';
 import MultiselectField from '../../common/form/MultiselectField';
 import RadioFileld from '../../common/form/RadioFileld';
 import SelectField from '../../common/form/SelectField';
 import TextField from '../../common/form/TextField';
 import UserCardPreloader from '../../ui/UserCardPreloader';
+import RandomAvatar from '../../common/RandomAvatar';
 
 const UserEdit = () => {
     const { uid } = useParams();
@@ -89,6 +91,13 @@ const UserEdit = () => {
                         <h3>{formData.name}</h3>
                     </div>
                     <div className="card-body">
+                        <div className="d-flex justify-content-center mb-2">
+                            <RandomAvatar
+                                size={80}
+                                uid={uid}
+                                gender={formData.sex}
+                            />
+                        </div>
                         <form>
                             <TextField
                                 label="Имя"
@@ -128,11 +137,12 @@ const UserEdit = () => {
                             />
                         </form>
                     </div>
-                    <div className="card-footer">
+                    <div className="card-footer d-flex justify-content-between">
+                        <BackButton path={`/users/${uid}`} title="Назад" />
                         <button
                             onClick={handleSubmit}
                             disabled={isValid}
-                            className="btn btn-primary"
+                            className="btn btn-sm btn-primary"
                         >
                             Сохранить
                         </button>

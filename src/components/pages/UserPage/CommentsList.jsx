@@ -22,8 +22,18 @@ const CommentsList = () => {
         });
     };
 
+    const sortCommentByDate = () => {
+        const sortedComments = [...comments];
+        sortedComments.sort((a, b) => {
+            return parseInt(b.created_at) - parseInt(a.created_at);
+        });
+        return sortedComments;
+    };
+
+    const sortedComments = comments && sortCommentByDate();
+
     const getComments = () => {
-        return comments.map((comment) => (
+        return sortedComments.map((comment) => (
             <Comment
                 key={comment._id}
                 commentId={comment._id}

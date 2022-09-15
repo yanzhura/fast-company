@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import api from '../../../api';
 import UserCard from './UserCard';
-import UserCardPreloader from '../../ui/UserCardPreloader';
 import CommentsList from './CommentsList';
+import Preloader from '../../common/Preloader';
 
 const UserPage = ({ uid }) => {
     const [userData, setUserData] = useState(undefined);
@@ -29,7 +29,9 @@ const UserPage = ({ uid }) => {
                         </div>
                     </div>
                 ) : (
-                    <UserCardPreloader />
+                    <div className="d-flex justify-content-between m-5">
+                        <Preloader />
+                    </div>
                 )}
             </div>
         </div>
