@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 
 const CommentsList = () => {
     const [comments, setComments] = useState(undefined);
-    const [rerender, setRerender] = useState(0);
+    const [rerender, setRerender] = useState('');
     const { uid } = useParams();
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const CommentsList = () => {
             <div className="card mb-2">
                 {' '}
                 <div className="card-body ">
-                    <UserCommentsForm />
+                    <UserCommentsForm onNewComment={setRerender} />
                 </div>
             </div>
             <div className="card mb-3">

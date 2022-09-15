@@ -45,6 +45,13 @@ export function validator(data, config) {
                 break;
             }
 
+            case 'lessThan50symbols': {
+                if (typeof data === 'string') {
+                    statusValidate = data.length > 50;
+                }
+                break;
+            }
+
             default:
                 break;
         }

@@ -53,7 +53,8 @@ Comment.propTypes = {
     commentId: PropTypes.string.isRequired,
     userId: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
-    createdAt: PropTypes.string.isRequired,
+    createdAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+        .isRequired,
     onRemove: PropTypes.func.isRequired
 };
 
