@@ -3,12 +3,13 @@ import { orderBy } from 'lodash';
 import { paginate, objectToArray } from '../../../utils/utils';
 import api from '../../../api';
 import Pagination from '../../common/Pagination';
-import Preloader from '../../common/Preloader';
+// import Preloader from '../../common/Preloader';
 import SearchStatus from '../../ui/SearchStatus';
 import UsersTable from '../../ui/UsersTable';
 import SearchBar from '../../ui/SearchBar';
 import SelectField from '../../common/form/SelectField';
 import PageSizeSelector from '../../ui/PageSizeSelector';
+import { useUser } from '../../../hooks/useUsers';
 
 const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
@@ -17,10 +18,10 @@ const UsersListPage = () => {
     const [filterProfession, setFilterProfession] = useState('');
     const [filterUsername, setFilterUsername] = useState('');
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
-    const [users, setUsers] = useState();
+
+    const { users } = useUser();
 
     useEffect(() => {
-        api.users.fetchAll().then((data) => setUsers(data));
         api.professions
             .fetchAll()
             .then((data) => setProfessions(objectToArray(data)));
@@ -43,18 +44,20 @@ const UsersListPage = () => {
     }, [filterProfession]);
 
     const handleDeleteRow = (id) => {
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+        console.log('id :>> ', id);
+        // setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
     };
 
     const handleBookmark = (id) => {
-        setUsers((prevUsers) =>
-            prevUsers.map((user) => {
-                if (user._id === id) {
-                    user.bookmark = !user.bookmark;
-                }
-                return user;
-            })
-        );
+        console.log('Bookmark set fot user', id);
+        // setUsers((prevUsers) =>
+        //     prevUsers.map((user) => {
+        //         if (user._id === id) {
+        //             user.bookmark = !user.bookmark;
+        //         }
+        //         return user;
+        //     })
+        // );
     };
 
     const handlePageChange = (page) => {
@@ -100,88 +103,79 @@ const UsersListPage = () => {
         setPageSize(parseInt(newPageSize));
     };
 
-    if (users) {
-        const filteredUsers = filterUsers(users);
-        const sortedUsers = orderBy(filteredUsers, sort.path, sort.order);
-        let usersCrop;
-        let pagesCount;
+    const filteredUsers = filterUsers(users);
+    const sortedUsers = orderBy(filteredUsers, sort.path, sort.order);
+    let usersCrop;
+    let pagesCount;
 
-        if (pageSize !== 0) {
-            usersCrop = paginate(sortedUsers, currentPage, pageSize);
-            pagesCount = Math.ceil(sortedUsers.length / pageSize);
-        } else {
-            usersCrop = users;
-            pagesCount = 1;
-        }
+    if (pageSize !== 0) {
+        usersCrop = paginate(sortedUsers, currentPage, pageSize);
+        pagesCount = Math.ceil(sortedUsers.length / pageSize);
+    } else {
+        usersCrop = users;
+        pagesCount = 1;
+    }
 
-        if (pagesCount < currentPage && pagesCount > 0) {
-            setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
-        }
+    if (pagesCount < currentPage && pagesCount > 0) {
+        setCurrentage((prevCurrentPage) => prevCurrentPage - 1);
+    }
 
-        return (
-            <div className="container mt-5">
-                <div className="row mb-2">
-                    <div className="col-3">
-                        <SearchStatus usersNumber={filteredUsers.length} />
-                    </div>
-                    <div className="col-3"></div>
-                    <div className="col-3">
-                        <SelectField
-                            options={professions}
-                            name="profession"
-                            tip="Выберите профессию..."
-                            value={filterProfession}
-                            onChange={handleItemSelect}
-                            onClear={clearFilterProfession}
-                        />
-                    </div>
-                    <div className="col-3">
-                        <SearchBar
-                            filterUsername={filterUsername}
-                            handleFilterUsername={handleFilterUsername}
-                            clearFilterUsername={clearFilterUsername}
-                        />
-                    </div>
+    return (
+        <div className="container mt-5">
+            <div className="row mb-2">
+                <div className="col-3">
+                    <SearchStatus usersNumber={filteredUsers.length} />
                 </div>
-                <div className="row">
-                    {users.length > 0 ? (
-                        <UsersTable
-                            users={usersCrop}
-                            onSort={handleSort}
-                            selectedSort={sort}
-                            onDelete={handleDeleteRow}
-                            onBookmark={handleBookmark}
+                <div className="col-3"></div>
+                <div className="col-3">
+                    <SelectField
+                        options={professions}
+                        name="profession"
+                        tip="Выберите профессию..."
+                        value={filterProfession}
+                        onChange={handleItemSelect}
+                        onClear={clearFilterProfession}
+                    />
+                </div>
+                <div className="col-3">
+                    <SearchBar
+                        filterUsername={filterUsername}
+                        handleFilterUsername={handleFilterUsername}
+                        clearFilterUsername={clearFilterUsername}
+                    />
+                </div>
+            </div>
+            <div className="row">
+                {users.length > 0 ? (
+                    <UsersTable
+                        users={usersCrop}
+                        onSort={handleSort}
+                        selectedSort={sort}
+                        onDelete={handleDeleteRow}
+                        onBookmark={handleBookmark}
+                    />
+                ) : (
+                    ''
+                )}
+            </div>
+            <div className="row">
+                <div className="col-10">
+                    {pagesCount > 1 ? (
+                        <Pagination
+                            pagesCount={pagesCount}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
                         />
                     ) : (
                         ''
                     )}
                 </div>
-                <div className="row">
-                    <div className="col-10">
-                        {pagesCount > 1 ? (
-                            <Pagination
-                                pagesCount={pagesCount}
-                                currentPage={currentPage}
-                                onPageChange={handlePageChange}
-                            />
-                        ) : (
-                            ''
-                        )}
-                    </div>
-                    <div className="col-2">
-                        <PageSizeSelector
-                            pageSize={pageSize}
-                            onPageSizeChange={handlePageSizeChange}
-                        />
-                    </div>
+                <div className="col-2">
+                    <PageSizeSelector
+                        pageSize={pageSize}
+                        onPageSizeChange={handlePageSizeChange}
+                    />
                 </div>
-            </div>
-        );
-    }
-    return (
-        <div className="container mt-5">
-            <div className="row d-flex justify-content-center">
-                <Preloader />
             </div>
         </div>
     );
