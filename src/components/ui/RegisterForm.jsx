@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/TextField';
 import { validator } from '../../utils/validator';
-import { objectToArray } from '../../utils/utils';
-import api from '../../api';
 import SelectField from '../common/form/SelectField';
 import RadioFileld from '../common/form/RadioFileld';
 import MultiselectField from '../common/form/MultiselectField';
 import CheckboxField from '../common/form/CheckboxField';
+import { useQuality } from '../../hooks/useQualities';
+import { useProfession } from '../../hooks/useProfessions';
 
 const RegisterForm = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,21 +20,12 @@ const RegisterForm = () => {
         license: false
     });
     const [errors, setErrors] = useState({});
-    const [professions, setProfessions] = useState([]);
-    const [qualities, setQualities] = useState([]);
+    const { professions } = useProfession();
+    const { qualities } = useQuality();
 
     useEffect(() => {
         validate();
     }, [formData]);
-
-    useEffect(() => {
-        api.professions
-            .fetchAll()
-            .then((data) => setProfessions(objectToArray(data)));
-        api.qualities
-            .fetchAll()
-            .then((data) => setQualities(objectToArray(data)));
-    }, []);
 
     const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
