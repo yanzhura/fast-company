@@ -7,18 +7,22 @@ import MultiselectField from '../common/form/MultiselectField';
 import CheckboxField from '../common/form/CheckboxField';
 import { useQuality } from '../../hooks/useQualities';
 import { useProfession } from '../../hooks/useProfessions';
+import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom';
 
 const RegisterForm = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         email: '',
         password: '',
         profession: '',
         gender: 'male',
         qualities: [],
         license: false
-    });
+    };
+
+    const history = useHistory();
+    const { signUp } = useAuth();
+    const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState({});
     const { professions } = useProfession();
     const { qualities } = useQuality();
@@ -40,20 +44,22 @@ const RegisterForm = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('submit :>> ', formData);
         const isValid = validate();
         if (!isValid) return;
-        setFormData({
-            email: '',
-            password: '',
-            profession: '',
-            gender: 'male',
-            qualities: [],
-            license: false
-        });
-        setIsLoggedIn(true);
+        const newData = {
+            ...formData,
+            qualities: formData.qualities.map((q) => q._id),
+            profession: formData.profession._id
+        };
+        try {
+            await signUp(newData);
+            history.replace('/users');
+        } catch (error) {
+            setErrors(error);
+        }
+        setFormData(initialFormState);
     };
 
     const isValid = Object.keys(errors).length !== 0;
@@ -102,67 +108,67 @@ const RegisterForm = () => {
 
     return (
         <>
-            {!isLoggedIn ? (
-                <form>
-                    <TextField
-                        label="Эл. почта"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={errors.email}
-                    />
-                    <TextField
-                        label="Пароль"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        error={errors.password}
-                    />
-                    <SelectField
-                        options={professions}
-                        label="Укажите свою профессию"
-                        name="profession"
-                        tip="Профессия..."
-                        onChange={handleChange}
-                        value={formData.profession}
-                        error={errors.profession}
-                    />
-                    <RadioFileld
-                        options={genders}
-                        label="Укажите пол"
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                    />
-                    <MultiselectField
-                        options={qualities}
-                        label="Укажите свои качества"
-                        name="qualities"
-                        value={formData.qualities}
-                        onChange={handleChange}
-                    />
-                    <CheckboxField
-                        name="license"
-                        value={formData.license}
-                        onChange={handleChange}
-                        error={errors.license}
-                    >
-                        Я согласен с лицензионным соглашением.
-                    </CheckboxField>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isValid}
-                        className="btn btn-primary w-100 mx-auto"
-                    >
-                        Зарегистрироваться
-                    </button>
-                </form>
-            ) : (
-                <h3>Учётная запись успешно создана</h3>
-            )}
+            <form>
+                <TextField
+                    label="Эл. почта"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                />
+                <TextField
+                    label="Пароль"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={errors.password}
+                />
+                <SelectField
+                    options={professions}
+                    label="Укажите свою профессию"
+                    name="profession"
+                    tip="Профессия..."
+                    onChange={handleChange}
+                    value={formData.profession}
+                    error={errors.profession}
+                />
+                <RadioFileld
+                    options={genders}
+                    label="Укажите пол"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                />
+                <MultiselectField
+                    options={qualities}
+                    label="Укажите свои качества"
+                    name="qualities"
+                    value={formData.qualities}
+                    onChange={handleChange}
+                />
+                <CheckboxField
+                    name="license"
+                    value={formData.license}
+                    onChange={handleChange}
+                    error={errors.license}
+                >
+                    Я согласен с лицензионным соглашением.
+                </CheckboxField>
+                <button
+                    onClick={handleSubmit}
+                    disabled={isValid}
+                    className="btn btn-primary w-100 mx-auto"
+                >
+                    Зарегистрироваться
+                </button>
+            </form>
         </>
     );
 };
 
 export default RegisterForm;
+
+// TODO: Не работает отображение ошибки под полем "email" когда пользователь уже существует
+// TODO: Не происходит переадресация после того, как пользователь зарегистрирован
+// TODO: В консоли вылезает странная ошибка при регистрации нового пользователя
