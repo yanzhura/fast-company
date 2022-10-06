@@ -49,7 +49,6 @@ const AuthProvider = ({ children }) => {
                     throw errorObject;
                 }
             }
-            throw new Error();
         }
     };
 
@@ -62,13 +61,39 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+    const signIn = async ({ email, password }) => {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        try {
+            const { data } = await httpAuth.post(url, {
+                email,
+                password,
+                returnSecureToken: true
+            });
+            setTokens(data);
+        } catch (error) {
+            errorCatcher(error);
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                if (
+                    message === 'EMAIL_NOT_FOUND' ||
+                    message === 'INVALID_PASSWORD'
+                ) {
+                    const errorObject = {
+                        email: 'Неверно введены email или пароль'
+                    };
+                    throw errorObject;
+                }
+            }
+        }
+    };
+
     const errorCatcher = (error) => {
         const { message } = error.response.data;
         setError(message);
     };
 
     return (
-        <AuthContext.Provider value={{ signUp, currentUser }}>
+        <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
             {children}
         </AuthContext.Provider>
     );

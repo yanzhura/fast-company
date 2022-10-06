@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/TextField';
 import CheckboxField from '../common/form/CheckboxField';
 import { validator } from '../../utils/validator';
+import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom';
 
 const LoginForm = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -16,6 +16,9 @@ const LoginForm = () => {
     useEffect(() => {
         validate();
     }, [formData]);
+
+    const { signIn } = useAuth();
+    const history = useHistory();
 
     const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
@@ -30,17 +33,16 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        console.log('formData :>> ', formData);
-        setFormData({
-            email: '',
-            password: '',
-            stayOnline: false
-        });
-        setIsLoggedIn(true);
+        try {
+            await signIn(formData);
+            history.push('/');
+        } catch (error) {
+            setErrors(error);
+        }
     };
 
     const isValid = Object.keys(errors).length !== 0;
@@ -73,41 +75,37 @@ const LoginForm = () => {
 
     return (
         <>
-            {!isLoggedIn ? (
-                <form>
-                    <TextField
-                        label="Эл. почта"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={errors.email}
-                    />
-                    <TextField
-                        label="Пароль"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        error={errors.password}
-                    />
-                    <CheckboxField
-                        name="stayOnline"
-                        value={formData.stayOnline}
-                        onChange={handleChange}
-                    >
-                        Запомнить меня
-                    </CheckboxField>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isValid}
-                        className="btn btn-primary w-100 mx-auto"
-                    >
-                        Вход
-                    </button>
-                </form>
-            ) : (
-                <h3>Вы вошли</h3>
-            )}
+            <form>
+                <TextField
+                    label="Эл. почта"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                />
+                <TextField
+                    label="Пароль"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={errors.password}
+                />
+                <CheckboxField
+                    name="stayOnline"
+                    value={formData.stayOnline}
+                    onChange={handleChange}
+                >
+                    Запомнить меня
+                </CheckboxField>
+                <button
+                    onClick={handleSubmit}
+                    disabled={isValid}
+                    className="btn btn-primary w-100 mx-auto"
+                >
+                    Вход
+                </button>
+            </form>
         </>
     );
 };
