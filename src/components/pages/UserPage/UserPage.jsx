@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import api from '../../../api';
 import UserCard from './UserCard';
 import CommentsList from './CommentsList';
 import Preloader from '../../common/Preloader';
+import { useUser } from '../../../hooks/useUsers';
 
 const UserPage = ({ uid }) => {
-    const [userData, setUserData] = useState(undefined);
-
-    useEffect(() => {
-        api.users.getById(uid).then((data) => {
-            setUserData(data);
-        });
-    }, []);
-
+    const { getUserById } = useUser();
+    const user = getUserById(uid);
     return (
         <div>
             <div>
-                {userData ? (
+                {user ? (
                     <div className="container mt-5">
                         <div className="row gutters-sm">
                             <div className="col-md-4 mb-3">
-                                <UserCard {...userData} uid={uid} />
+                                <UserCard {...user} uid={uid} />
                             </div>
                             <div className="col-md-8">
                                 <CommentsList />

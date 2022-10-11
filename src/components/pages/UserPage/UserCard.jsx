@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Qualities from '../../ui/Qualities';
 import RandomAvatar from '../../common/RandomAvatar';
+import { useAuth } from '../../../hooks/useAuth';
 
 const UserCard = ({
     name,
@@ -11,19 +12,22 @@ const UserCard = ({
     completedMeetings,
     rate,
     uid,
-    sex
+    gender
 }) => {
+    const { currentUser } = useAuth();
     return (
         <>
             <div className="card mb-3">
                 <div className="card-body">
-                    <Link to={`/users/${uid}/edit`}>
-                        <button className="position-absolute top-0 end-0 btn btn-light btn-sm">
-                            <i className="bi bi-gear"></i>
-                        </button>
-                    </Link>
+                    {currentUser._id === uid && (
+                        <Link to={`/users/${uid}/edit`}>
+                            <button className="position-absolute top-0 end-0 btn btn-light btn-sm">
+                                <i className="bi bi-gear"></i>
+                            </button>
+                        </Link>
+                    )}
                     <div className="d-flex flex-column align-items-center text-center position-relative">
-                        <RandomAvatar size={80} uid={uid} gender={sex} />
+                        <RandomAvatar size={80} uid={uid} gender={gender} />
                         <div className="mt-3">
                             <h4>{name}</h4>
                             <p className="text-secondary mb-1">
@@ -75,7 +79,7 @@ UserCard.propTypes = {
     rate: PropTypes.number.isRequired,
     bookmark: PropTypes.bool.isRequired,
     uid: PropTypes.string.isRequired,
-    sex: PropTypes.oneOf(['male', 'female', 'other']).isRequired
+    gender: PropTypes.oneOf(['male', 'female', 'other']).isRequired
 };
 
 export default UserCard;

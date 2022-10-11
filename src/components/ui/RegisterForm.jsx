@@ -14,6 +14,7 @@ const RegisterForm = () => {
     const initialFormState = {
         email: '',
         password: '',
+        name: '',
         profession: '',
         gender: 'male',
         qualities: [],
@@ -72,6 +73,15 @@ const RegisterForm = () => {
                 message: 'Email ведён некорректно'
             }
         },
+        name: {
+            isRequired: {
+                message: 'Поле "имя" должно быть заполнено.'
+            },
+            minLength: {
+                message: 'Имя не может состоять менее чем из 3-х символов',
+                value: 3
+            }
+        },
         password: {
             isRequired: {
                 message: 'Поле "пароль" должно быть заполнено.'
@@ -114,6 +124,13 @@ const RegisterForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     error={errors.email}
+                />
+                <TextField
+                    label="Имя"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    error={errors.name}
                 />
                 <TextField
                     label="Пароль"

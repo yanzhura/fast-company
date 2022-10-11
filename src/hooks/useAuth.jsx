@@ -3,9 +3,18 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import userService from '../services/user.service';
-import { setTokens } from '../services/localStorage.service';
+import localStorageService, {
+    setTokens
+} from '../services/localStorage.service';
+import { randomInt } from '../utils/utils';
+import { useHistory } from 'react-router-dom';
 
-const httpAuth = axios.create();
+export const httpAuth = axios.create({
+    baseURL: 'https://identitytoolkit.googleapis.com/v1/',
+    params: {
+        key: process.env.REACT_APP_FIREBASE_KEY
+    }
+});
 
 const AuthContext = React.createContext();
 
@@ -14,8 +23,29 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState({});
+    const [currentUser, setCurrentUser] = useState();
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const history = useHistory();
+
+    const getUserData = async () => {
+        try {
+            const { content } = await userService.getCurrentUser();
+            setCurrentUser(content);
+        } catch (error) {
+            errorCatcher(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (localStorageService.getAccessToken()) {
+            getUserData();
+        } else {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (error !== null) {
@@ -36,6 +66,8 @@ const AuthProvider = ({ children }) => {
             await createUser({
                 _id: data.localId,
                 email,
+                rate: randomInt(1, 5),
+                completedMeetings: randomInt(0, 200),
                 ...rest
             });
         } catch (error) {
@@ -70,6 +102,7 @@ const AuthProvider = ({ children }) => {
                 returnSecureToken: true
             });
             setTokens(data);
+            await getUserData();
         } catch (error) {
             errorCatcher(error);
             const { code, message } = error.response.data.error;
@@ -87,14 +120,20 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+    const logout = () => {
+        localStorageService.removeAuthData();
+        setCurrentUser(null);
+        history.push('/');
+    };
+
     const errorCatcher = (error) => {
         const { message } = error.response.data;
         setError(message);
     };
 
     return (
-        <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
-            {children}
+        <AuthContext.Provider value={{ signUp, signIn, logout, currentUser }}>
+            {!isLoading ? children : 'Loading...'}
         </AuthContext.Provider>
     );
 };
