@@ -55,11 +55,10 @@ const RegisterForm = () => {
         };
         try {
             await signUp(newData);
-            history.replace('/users');
+            history.push('/');
         } catch (error) {
             setErrors(error);
         }
-        setFormData(initialFormState);
     };
 
     const isValid = Object.keys(errors).length !== 0;
@@ -168,7 +167,3 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
-
-// TODO: Не работает отображение ошибки под полем "email" когда пользователь уже существует
-// TODO: Не происходит переадресация после того, как пользователь зарегистрирован
-// TODO: В консоли вылезает странная ошибка при регистрации нового пользователя
