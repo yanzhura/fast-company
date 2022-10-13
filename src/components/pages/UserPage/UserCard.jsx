@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Qualities from '../../ui/Qualities';
 import RandomAvatar from '../../common/RandomAvatar';
 import { useAuth } from '../../../hooks/useAuth';
+import Profession from '../../ui/Profession';
 
 const UserCard = ({
     name,
@@ -31,7 +32,7 @@ const UserCard = ({
                         <div className="mt-3">
                             <h4>{name}</h4>
                             <p className="text-secondary mb-1">
-                                {profession.name}
+                                <Profession id={profession} />
                             </p>
                             <div className="text-muted">
                                 <i
