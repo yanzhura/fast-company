@@ -1,44 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import NavProfile from './NavProfile';
 
 const NavBar = () => {
-    const pages = [
-        { id: 1, path: '/', title: 'Главная' },
-        { id: 2, path: '/login', title: 'Вход' },
-        { id: 3, path: '/users', title: 'Пользователи' }
-    ];
-
-    const location = useLocation();
-    const [currentPath, setCurrentPath] = useState('/');
-
-    useEffect(() => {
-        setCurrentPath(location.pathname);
-    }, [location.pathname]);
-
-    const navLinks = pages.map((link) => {
-        const isActive = currentPath === link.path ? 'active' : '';
-
-        return (
-            <li className="nav-item" key={link.id}>
-                <Link
-                    className={`nav-link ${isActive}`}
-                    aria-current="page"
-                    to={link.path}
-                >
-                    {link.title}
-                </Link>
-            </li>
-        );
-    });
+    const { currentUser } = useAuth();
 
     return (
-        <div className="shadow p-3">
-            <h1 className="fw-bolder fst-italic text-secondary">
-                Fast Company
-            </h1>
-            <hr />
-            <ul className="nav nav-pills">{navLinks}</ul>
-        </div>
+        <nav className="navbar shadow p-3">
+            <div className="container-fluid">
+                <ul className="nav nav-pills">
+                    <li className="nav-item">
+                        <Link className="nav-link" aria-current="page" to="/">
+                            Главная
+                        </Link>
+                    </li>
+                    {currentUser && (
+                        <li className="nav-item">
+                            <Link
+                                className="nav-link"
+                                aria-current="page"
+                                to="/users"
+                            >
+                                Пользователи
+                            </Link>
+                        </li>
+                    )}
+                </ul>
+                <div className="d-flex">
+                    {currentUser ? (
+                        <NavProfile />
+                    ) : (
+                        <div className="nav-item">
+                            <Link
+                                className="nav-link"
+                                aria-current="page"
+                                to="/login"
+                            >
+                                Вход
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </nav>
     );
 };
 

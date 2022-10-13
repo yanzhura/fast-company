@@ -10,7 +10,7 @@ export const useQuality = () => {
 };
 
 const QualityProvider = ({ children }) => {
-    const [qualities, setQualities] = useState(true);
+    const [qualities, setQualities] = useState([]);
     const [isLoading, setisLoading] = useState(true);
     const [error, setError] = useState(null);
 

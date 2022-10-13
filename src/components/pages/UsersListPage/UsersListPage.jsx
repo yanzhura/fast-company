@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { orderBy } from 'lodash';
-import { paginate, objectToArray } from '../../../utils/utils';
-import api from '../../../api';
+import { paginate } from '../../../utils/utils';
 import Pagination from '../../common/Pagination';
-// import Preloader from '../../common/Preloader';
 import SearchStatus from '../../ui/SearchStatus';
 import UsersTable from '../../ui/UsersTable';
 import SearchBar from '../../ui/SearchBar';
 import SelectField from '../../common/form/SelectField';
 import PageSizeSelector from '../../ui/PageSizeSelector';
 import { useUser } from '../../../hooks/useUsers';
+import { useProfession } from '../../../hooks/useProfessions';
+import { useAuth } from '../../../hooks/useAuth';
 
 const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
-    const [professions, setProfessions] = useState([]);
+    const { professions, isLoading: professionsLoading } = useProfession();
     const [filterProfession, setFilterProfession] = useState('');
     const [filterUsername, setFilterUsername] = useState('');
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
 
     const { users } = useUser();
-
-    useEffect(() => {
-        api.professions
-            .fetchAll()
-            .then((data) => setProfessions(objectToArray(data)));
-    }, []);
+    const { currentUser } = useAuth();
 
     useEffect(() => {
         if (filterProfession && filterProfession !== 'DEFAULT') {
@@ -42,11 +37,6 @@ const UsersListPage = () => {
     useEffect(() => {
         setCurrentage(1);
     }, [filterProfession]);
-
-    const handleDeleteRow = (id) => {
-        console.log('id :>> ', id);
-        // setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
-    };
 
     const handleBookmark = (id) => {
         console.log('Bookmark set fot user', id);
@@ -86,16 +76,19 @@ const UsersListPage = () => {
     };
 
     const filterUsers = (users) => {
+        const filteredCurrentUser = users.filter(
+            (u) => u._id !== currentUser._id
+        );
         if (filterProfession) {
-            return users.filter(
-                (user) => user.profession._id === filterProfession._id
+            return filteredCurrentUser.filter(
+                (u) => u.profession._id === filterProfession._id
             );
         } else if (filterUsername) {
-            return users.filter((user) =>
-                user.name.toLowerCase().includes(filterUsername)
+            return filteredCurrentUser.filter((u) =>
+                u.name.toLowerCase().includes(filterUsername)
             );
         } else {
-            return users;
+            return filteredCurrentUser;
         }
     };
 
@@ -128,14 +121,16 @@ const UsersListPage = () => {
                 </div>
                 <div className="col-3"></div>
                 <div className="col-3">
-                    <SelectField
-                        options={professions}
-                        name="profession"
-                        tip="Выберите профессию..."
-                        value={filterProfession}
-                        onChange={handleItemSelect}
-                        onClear={clearFilterProfession}
-                    />
+                    {!professionsLoading && (
+                        <SelectField
+                            options={professions}
+                            name="profession"
+                            tip="Выберите профессию..."
+                            value={filterProfession}
+                            onChange={handleItemSelect}
+                            onClear={clearFilterProfession}
+                        />
+                    )}
                 </div>
                 <div className="col-3">
                     <SearchBar
@@ -151,7 +146,6 @@ const UsersListPage = () => {
                         users={usersCrop}
                         onSort={handleSort}
                         selectedSort={sort}
-                        onDelete={handleDeleteRow}
                         onBookmark={handleBookmark}
                     />
                 ) : (

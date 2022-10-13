@@ -1,25 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import RandomAvatar from '../../common/RandomAvatar';
-import api from '../../../api';
 import { getDateFromNow } from '../../../utils/utils';
+import { useUser } from '../../../hooks/useUsers';
+import { useAuth } from '../../../hooks/useAuth';
 
 const Comment = ({ commentId, userId, content, createdAt, onRemove }) => {
-    const [user, setUser] = useState(undefined);
-
-    useEffect(() => {
-        api.users.getById(userId).then((data) => {
-            setUser(data);
-        });
-    }, []);
-
+    const { getUserById } = useUser();
+    const user = getUserById(userId);
+    const { currentUser } = useAuth();
     return (
         <div className="bg-light card-body  mb-3">
             <div className="row">
                 <div className="col">
                     <div className="d-flex flex-start ">
                         {user ? (
-                            <RandomAvatar uid={userId} gender={user.sex} />
+                            <RandomAvatar uid={userId} gender={user.gender} />
                         ) : (
                             ''
                         )}
@@ -29,15 +25,17 @@ const Comment = ({ commentId, userId, content, createdAt, onRemove }) => {
                                     <p className="mb-1 ">
                                         {user ? user.name : ''}
                                         <span className="small">
-                                            {` - ${getDateFromNow(createdAt)}`}
+                                            {` - ${getDateFromNow(createdAt)}`}{' '}
                                         </span>
                                     </p>
-                                    <button
-                                        onClick={() => onRemove(commentId)}
-                                        className="btn btn-sm text-primary d-flex align-items-center"
-                                    >
-                                        <i className="bi bi-x-lg"></i>
-                                    </button>
+                                    {currentUser._id === userId && (
+                                        <button
+                                            onClick={() => onRemove(commentId)}
+                                            className="btn btn-sm text-primary d-flex align-items-center"
+                                        >
+                                            <i className="bi bi-x-lg"></i>
+                                        </button>
+                                    )}
                                 </div>
                                 <p className="small mb-0">{content}</p>
                             </div>

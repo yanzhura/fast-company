@@ -6,7 +6,7 @@ import Table from '../common/table';
 import { Link } from 'react-router-dom';
 import Profession from './Profession';
 
-const UsersTable = ({ users, onSort, selectedSort, onBookmark, onDelete }) => {
+const UsersTable = ({ users, onSort, selectedSort, onBookmark }) => {
     const columns = {
         name: {
             name: 'Имя',
@@ -36,22 +36,6 @@ const UsersTable = ({ users, onSort, selectedSort, onBookmark, onDelete }) => {
                     onBookmark={() => onBookmark(user._id)}
                 />
             )
-        },
-        delete: {
-            name: 'Удалить',
-            component: (user) => (
-                <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => {
-                        onDelete(user._id);
-                    }}
-                >
-                    <i
-                        className="bi bi-trash3"
-                        style={{ fontSize: '1.1rem' }}
-                    ></i>
-                </button>
-            )
         }
     };
     return (
@@ -68,8 +52,7 @@ UsersTable.propTypes = {
     users: PropTypes.array.isRequired,
     onSort: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired,
-    onBookmark: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired
+    onBookmark: PropTypes.func.isRequired
 };
 
 export default UsersTable;
