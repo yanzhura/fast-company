@@ -74,7 +74,7 @@ const UserCard = ({
 UserCard.propTypes = {
     name: PropTypes.string.isRequired,
     qualities: PropTypes.array.isRequired,
-    profession: PropTypes.object.isRequired,
+    profession: PropTypes.string.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
     bookmark: PropTypes.bool.isRequired,
@@ -83,3 +83,5 @@ UserCard.propTypes = {
 };
 
 export default UserCard;
+
+// TODO Сделать загрузку названия професси из Firebase

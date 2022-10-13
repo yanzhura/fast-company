@@ -4,6 +4,7 @@ import UserCard from './UserCard';
 import CommentsList from './CommentsList';
 import Preloader from '../../common/Preloader';
 import { useUser } from '../../../hooks/useUsers';
+import CommentsProvider from '../../../hooks/useComments';
 
 const UserPage = ({ uid }) => {
     const { getUserById } = useUser();
@@ -18,7 +19,9 @@ const UserPage = ({ uid }) => {
                                 <UserCard {...user} uid={uid} />
                             </div>
                             <div className="col-md-8">
-                                <CommentsList />
+                                <CommentsProvider>
+                                    <CommentsList />
+                                </CommentsProvider>
                             </div>
                         </div>
                     </div>

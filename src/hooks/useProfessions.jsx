@@ -10,7 +10,7 @@ export const useProfession = () => {
 };
 
 const ProfessionProvider = ({ children }) => {
-    const [professions, setProfessions] = useState(true);
+    const [professions, setProfessions] = useState(null);
     const [isLoading, setisLoading] = useState(true);
     const [error, setError] = useState(null);
 

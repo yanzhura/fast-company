@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import api from '../../../api';
 import { validator } from '../../../utils/validator';
-import SelectField from '../../common/form/SelectField';
 import TextAreaField from '../../common/form/TextAreaField';
-import { useParams } from 'react-router-dom';
+import { useComments } from '../../../hooks/useComments';
 
-const UserCommentsForm = ({ onNewComment }) => {
-    const { uid } = useParams();
+const UserCommentsForm = () => {
+    const { createComment } = useComments();
 
     const [formData, setFormData] = useState({
-        user: '',
         content: ''
     });
     const [errors, setErrors] = useState({});
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        api.users.fetchAll().then((data) => {
-            setUsers(data);
-        });
-    }, []);
 
     useEffect(() => {
         validate();
@@ -33,13 +22,6 @@ const UserCommentsForm = ({ onNewComment }) => {
         }));
     };
 
-    const handleClear = () => {
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            user: ''
-        }));
-    };
-
     const validate = () => {
         const errors = validator(formData, validatorConfig);
         setErrors(errors);
@@ -47,12 +29,6 @@ const UserCommentsForm = ({ onNewComment }) => {
     };
 
     const validatorConfig = {
-        user: {
-            isRequired: {
-                message:
-                    'Выберите пользователя, от имени которого ставляете комментарий.'
-            }
-        },
         content: {
             isRequired: {
                 message: 'Нельзя отправить пустой комментарий.'
@@ -68,19 +44,10 @@ const UserCommentsForm = ({ onNewComment }) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        api.comments
-            .add({
-                pageId: uid,
-                userId: formData.user._id,
-                content: formData.content
-            })
-            .then((data) => {
-                setFormData({
-                    user: '',
-                    content: ''
-                });
-                onNewComment(data);
-            });
+        createComment(formData.content);
+        setFormData({
+            content: ''
+        });
     };
 
     const isValid = Object.keys(errors).length !== 0;
@@ -88,15 +55,6 @@ const UserCommentsForm = ({ onNewComment }) => {
     return (
         <>
             <form>
-                <SelectField
-                    options={users}
-                    name="user"
-                    tip="Выберите пользователя..."
-                    value={formData.user}
-                    onChange={handleChange}
-                    onClear={handleClear}
-                    error={errors.user}
-                />
                 <TextAreaField
                     label="Комментарий"
                     name="content"
@@ -114,10 +72,6 @@ const UserCommentsForm = ({ onNewComment }) => {
             </form>
         </>
     );
-};
-
-UserCommentsForm.propTypes = {
-    onNewComment: PropTypes.func.isRequired
 };
 
 export default UserCommentsForm;

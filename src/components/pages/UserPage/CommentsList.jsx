@@ -1,25 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import UserCommentsForm from './UserCommentsForm';
 import Comment from './Comment';
 import Preloader from '../../common/Preloader';
-import api from '../../../api';
-import { useParams } from 'react-router-dom';
+import { useComments } from '../../../hooks/useComments';
 
 const CommentsList = () => {
-    const [comments, setComments] = useState(undefined);
-    const [rerender, setRerender] = useState('');
-    const { uid } = useParams();
-
-    useEffect(() => {
-        api.comments.fetchCommentsForUser(uid).then((data) => {
-            setComments(data);
-        });
-    }, [rerender]);
+    const { comments, removeComment } = useComments();
 
     const handleRemove = (id) => {
-        api.comments.remove(id).then((data) => {
-            setRerender(data);
-        });
+        removeComment(id);
     };
 
     const sortCommentByDate = () => {
@@ -39,7 +28,7 @@ const CommentsList = () => {
                 commentId={comment._id}
                 userId={comment.userId}
                 content={comment.content}
-                createdAt={comment.created_at}
+                createdAt={comment.createdAt}
                 onRemove={handleRemove}
             />
         ));
@@ -50,7 +39,7 @@ const CommentsList = () => {
             <div className="card mb-2">
                 {' '}
                 <div className="card-body ">
-                    <UserCommentsForm onNewComment={setRerender} />
+                    <UserCommentsForm />
                 </div>
             </div>
             <div className="card mb-3">
