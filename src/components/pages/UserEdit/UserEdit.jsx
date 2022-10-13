@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import api from '../../../api';
-import { objectToArray } from '../../../utils/utils';
 import { validator } from '../../../utils/validator';
 import BackButton from '../../common/BackButton';
 import MultiselectField from '../../common/form/MultiselectField';
 import RadioFileld from '../../common/form/RadioFileld';
 import SelectField from '../../common/form/SelectField';
 import TextField from '../../common/form/TextField';
-import UserCardPreloader from '../../ui/UserCardPreloader';
 import RandomAvatar from '../../common/RandomAvatar';
+import { useQuality } from '../../../hooks/useQualities';
+import { useProfession } from '../../../hooks/useProfessions';
+import { useAuth } from '../../../hooks/useAuth';
 
 const UserEdit = () => {
     const { uid } = useParams();
     const [formData, setFormData] = useState(undefined);
-    const [professions, setProfessions] = useState([]);
-    const [qualities, setQualities] = useState([]);
     const [errors, setErrors] = useState({});
     const history = useHistory();
+    const { isLoading: qualityIsLoading, qualities, getQuality } = useQuality();
+    const {
+        isLoading: profIsLoading,
+        professions,
+        getProfession
+    } = useProfession();
+    const { currentUser, update } = useAuth();
 
     const genders = [
         { name: 'Мужской', value: 'male' },
@@ -26,18 +31,47 @@ const UserEdit = () => {
     ];
 
     useEffect(() => {
-        api.users.getById(uid).then((data) => setFormData(data));
-        api.professions
-            .fetchAll()
-            .then((data) => setProfessions(objectToArray(data)));
-        api.qualities
-            .fetchAll()
-            .then((data) => setQualities(objectToArray(data)));
+        if (uid !== currentUser._id) {
+            history.push(`/users/${currentUser._id}/edit`);
+        }
     }, []);
 
     useEffect(() => {
         validate();
     }, [formData]);
+
+    useEffect(() => {
+        setFormData({
+            ...currentUser,
+            qualities: transformQualities(),
+            profession: transformProfession()
+        });
+    }, [currentUser, qualityIsLoading, profIsLoading]);
+
+    const transformQualities = () => {
+        if (!qualityIsLoading) {
+            const q = [];
+            for (const id of currentUser.qualities) {
+                q.push({
+                    _id: id,
+                    name: getQuality(id).name
+                });
+            }
+            return q;
+        } else {
+            return [];
+        }
+    };
+
+    const transformProfession = () => {
+        if (!profIsLoading) {
+            const prof = {
+                _id: currentUser.profession,
+                name: getProfession(currentUser.profession).name
+            };
+            return prof;
+        }
+    };
 
     const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
@@ -73,29 +107,39 @@ const UserEdit = () => {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        api.users.update(uid, formData);
-        history.replace('/users');
+        const newData = {
+            ...formData,
+            qualities: formData.qualities.map((q) => q._id),
+            profession: formData.profession._id
+        };
+        try {
+            await update(newData);
+            history.push('/');
+        } catch (error) {
+            setErrors(error);
+        }
+        history.replace(`/users/${uid}`);
     };
 
     const isValid = Object.keys(errors).length !== 0;
 
     return (
         <>
-            {formData ? (
+            {currentUser && !profIsLoading && !qualityIsLoading && formData && (
                 <div className="card m-4" style={{ width: '25rem' }}>
                     <div className="card-header d-flex justify-content-between">
-                        <h3>{formData.name}</h3>
+                        <h3>{currentUser.name}</h3>
                     </div>
                     <div className="card-body">
                         <div className="d-flex justify-content-center mb-2">
                             <RandomAvatar
                                 size={80}
-                                uid={uid}
-                                gender={formData.sex}
+                                uid={currentUser._id}
+                                gender={currentUser.gender}
                             />
                         </div>
                         <form>
@@ -123,8 +167,8 @@ const UserEdit = () => {
                             <RadioFileld
                                 options={genders}
                                 label="Пол"
-                                name="sex"
-                                value={formData.sex}
+                                name="gender"
+                                value={formData.gender}
                                 onChange={handleChange}
                             />
                             <MultiselectField
@@ -148,8 +192,6 @@ const UserEdit = () => {
                         </button>
                     </div>
                 </div>
-            ) : (
-                <UserCardPreloader />
             )}
         </>
     );

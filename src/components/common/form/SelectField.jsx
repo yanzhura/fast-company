@@ -31,49 +31,55 @@ const SelectField = ({
     return (
         <div className="mb-4">
             {label ? <div>{label}</div> : ''}
-            <div className="input-group input-group-sm">
-                <select
-                    className={getInputClasses()}
-                    name={name}
-                    onChange={handleChange}
-                    value={value[valueProperty] || tip}
-                >
-                    {tip ? (
-                        <option value={tip} disabled>
-                            {tip}
-                        </option>
+            {value !== undefined && (
+                <div className="input-group input-group-sm">
+                    <select
+                        className={getInputClasses()}
+                        name={name}
+                        onChange={handleChange}
+                        value={value[valueProperty] || tip}
+                    >
+                        {tip ? (
+                            <option value={tip} disabled>
+                                {tip}
+                            </option>
+                        ) : (
+                            ''
+                        )}
+
+                        {options.length === 0 && (
+                            <option value="loading" disabled>
+                                Загрузка...
+                            </option>
+                        )}
+
+                        {options.map((item) => (
+                            <option
+                                key={item[valueProperty]}
+                                value={item[valueProperty]}
+                            >
+                                {item[dataProperty]}
+                            </option>
+                        ))}
+                    </select>
+                    {onClear ? (
+                        <button
+                            className="btn btn-secondary"
+                            type="button"
+                            onClick={onClear}
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
                     ) : (
                         ''
                     )}
-
-                    {options.length === 0 && (
-                        <option value="loading" disabled>
-                            Загрузка...
-                        </option>
+                    {error ? (
+                        <div className="invalid-feedback">{error}</div>
+                    ) : (
+                        ''
                     )}
-
-                    {options.map((item) => (
-                        <option
-                            key={item[valueProperty]}
-                            value={item[valueProperty]}
-                        >
-                            {item[dataProperty]}
-                        </option>
-                    ))}
-                </select>
-                {onClear ? (
-                    <button
-                        className="btn btn-secondary"
-                        type="button"
-                        onClick={onClear}
-                    >
-                        <i className="bi bi-x-lg"></i>
-                    </button>
-                ) : (
-                    ''
-                )}
-                {error ? <div className="invalid-feedback">{error}</div> : ''}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
