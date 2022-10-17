@@ -120,6 +120,32 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+    const update = async ({ email, ...rest }) => {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        try {
+            await httpAuth.post(url, {
+                idToken: localStorageService.getAccessToken(),
+                email,
+                returnSecureToken: true
+            });
+            await updateUser({
+                email,
+                ...rest
+            });
+        } catch (error) {
+            errorCatcher(error);
+        }
+    };
+
+    const updateUser = async (data) => {
+        try {
+            const { content } = await userService.update(data);
+            setCurrentUser(content);
+        } catch (error) {
+            errorCatcher(error);
+        }
+    };
+
     const logout = () => {
         localStorageService.removeAuthData();
         setCurrentUser(null);
@@ -132,7 +158,9 @@ const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ signUp, signIn, logout, currentUser }}>
+        <AuthContext.Provider
+            value={{ signUp, signIn, update, logout, currentUser }}
+        >
             {!isLoading ? children : 'Loading...'}
         </AuthContext.Provider>
     );
