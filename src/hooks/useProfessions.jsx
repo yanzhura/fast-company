@@ -27,7 +27,7 @@ const ProfessionProvider = ({ children }) => {
 
     async function getProfessionsList() {
         try {
-            const { content } = await professionService.get();
+            const { content } = await professionService.fethAll();
             setProfessions(content);
             setisLoading(false);
         } catch (error) {

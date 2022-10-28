@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import UserCard from './UserCard';
 import CommentsList from './CommentsList';
 import Preloader from '../../common/Preloader';
-import { useUser } from '../../../hooks/useUsers';
 import CommentsProvider from '../../../hooks/useComments';
+import { getUserById } from '../../../store/users';
+import { useSelector } from 'react-redux';
 
 const UserPage = ({ uid }) => {
-    const { getUserById } = useUser();
-    const user = getUserById(uid);
+    const user = useSelector(getUserById(uid));
+    console.log('user', user);
     return (
         <div>
             <div>

@@ -7,16 +7,22 @@ import RadioFileld from '../../common/form/RadioFileld';
 import SelectField from '../../common/form/SelectField';
 import TextField from '../../common/form/TextField';
 import RandomAvatar from '../../common/RandomAvatar';
-import { useQuality } from '../../../hooks/useQualities';
 import { useProfession } from '../../../hooks/useProfessions';
 import { useAuth } from '../../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import {
+    getQualities,
+    getQualitiesLoadingStatus
+} from '../../../store/qualities';
 
 const UserEdit = () => {
     const { uid } = useParams();
     const [formData, setFormData] = useState(undefined);
     const [errors, setErrors] = useState({});
     const history = useHistory();
-    const { isLoading: qualityIsLoading, qualities, getQuality } = useQuality();
+    const qualities = useSelector(getQualities());
+    const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
+
     const {
         isLoading: profIsLoading,
         professions,
@@ -54,7 +60,7 @@ const UserEdit = () => {
             for (const id of currentUser.qualities) {
                 q.push({
                     _id: id,
-                    name: getQuality(id).name
+                    name: qualities.find((q) => q._id === id).name
                 });
             }
             return q;
