@@ -8,9 +8,8 @@ import SearchBar from '../../ui/SearchBar';
 import SelectField from '../../common/form/SelectField';
 import PageSizeSelector from '../../ui/PageSizeSelector';
 import { useProfession } from '../../../hooks/useProfessions';
-import { useAuth } from '../../../hooks/useAuth';
 import { useSelector } from 'react-redux';
-import { getUsersList } from '../../../store/users';
+import { getCurrentUserId, getUsersList } from '../../../store/users';
 
 const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
@@ -21,7 +20,7 @@ const UsersListPage = () => {
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
 
     const users = useSelector(getUsersList());
-    const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
 
     useEffect(() => {
         if (filterProfession && filterProfession !== 'DEFAULT') {
@@ -78,7 +77,7 @@ const UsersListPage = () => {
 
     const filterUsers = (users) => {
         const filteredCurrentUser = users.filter(
-            (u) => u._id !== currentUser._id
+            (u) => u._id !== currentUserId
         );
         if (filterProfession) {
             return filteredCurrentUser.filter(

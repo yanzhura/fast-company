@@ -9,10 +9,10 @@ import {
 
 const Qualities = ({ qualities }) => {
     const dispatch = useDispatch();
-    const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
-    useEffect((params) => {
+    useEffect(() => {
         dispatch(loadQualitiesList());
     }, []);
+    const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
 
     const getQualityBadges = () => {
         if (!qualityIsLoading) {

@@ -1,27 +1,44 @@
 /* eslint-disable indent */
 import authService from '../services/auth.service';
-import { setTokens } from '../services/localStorage.service';
+import {
+    getAccessToken,
+    getUserId,
+    setTokens
+} from '../services/localStorage.service';
 import userService from '../services/user.service';
 import { randomInt } from '../utils/utils';
 import customHistory from '../utils/customHistory';
+
+const initialState = getAccessToken()
+    ? {
+          entities: null,
+          isLoading: true,
+          error: null,
+          auth: { uerId: getUserId() },
+          isLoggedIn: true,
+          dataLoaded: false
+      }
+    : {
+          entities: null,
+          isLoading: false,
+          error: null,
+          auth: null,
+          isLoggedIn: false,
+          dataLoaded: false
+      };
 
 const { createSlice, createAction } = require('@reduxjs/toolkit');
 
 const usersSlice = createSlice({
     name: 'users',
-    initialState: {
-        entities: null,
-        isLoading: true,
-        error: null,
-        auth: null,
-        isLoggedIn: false
-    },
+    initialState,
     reducers: {
         usersRequested: (state) => {
             state.isLoading = true;
         },
         usersReceived: (state, action) => {
             state.entities = action.payload;
+            state.dataLoaded = true;
             state.isLoading = false;
         },
         usersRequestFailed: (state, action) => {
@@ -29,7 +46,8 @@ const usersSlice = createSlice({
             state.isLoading = false;
         },
         authRequestSuccess: (state, action) => {
-            state.auth = { ...action.payload, isLoggedIn: true };
+            state.auth = action.payload;
+            state.isLoggedIn = true;
         },
         authRequestFailed: (state, action) => {
             state.error = action.payload;
@@ -122,5 +140,10 @@ export const getUserById = (userId) => (state) => {
         return state.users.entities.find((u) => u._id === userId);
     }
 };
+
+export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
+export const getDataStatus = () => (state) => state.users.dataLoaded;
+export const getUsersLoadingStatus = () => (state) => state.users.isLoading;
+export const getCurrentUserId = () => (state) => state.users.auth.userId;
 
 export default usersReducer;
