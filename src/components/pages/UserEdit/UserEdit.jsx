@@ -7,14 +7,17 @@ import RadioFileld from '../../common/form/RadioFileld';
 import SelectField from '../../common/form/SelectField';
 import TextField from '../../common/form/TextField';
 import RandomAvatar from '../../common/RandomAvatar';
-import { useProfession } from '../../../hooks/useProfessions';
 import { useAuth } from '../../../hooks/useAuth';
 import { useSelector } from 'react-redux';
+import { currentUserData } from '../../../store/users';
 import {
     getQualities,
     getQualitiesLoadingStatus
 } from '../../../store/qualities';
-import { currentUserData } from '../../../store/users';
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from '../../../store/professions';
 
 const UserEdit = () => {
     const { uid } = useParams();
@@ -24,11 +27,8 @@ const UserEdit = () => {
     const qualities = useSelector(getQualities());
     const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
 
-    const {
-        isLoading: profIsLoading,
-        professions,
-        getProfession
-    } = useProfession();
+    const professions = useSelector(getProfessions());
+    const profIsLoading = useSelector(getProfessionsLoadingStatus());
     const { update } = useAuth();
     const currentUser = useSelector(currentUserData());
 
@@ -75,7 +75,8 @@ const UserEdit = () => {
         if (!profIsLoading) {
             const prof = {
                 _id: currentUser.profession,
-                name: getProfession(currentUser.profession).name
+                name: professions.find((p) => p._id === currentUser.profession)
+                    .name
             };
             return prof;
         }

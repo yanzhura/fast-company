@@ -85,5 +85,3 @@ UserCard.propTypes = {
 };
 
 export default UserCard;
-
-// TODO Сделать загрузку названия професси из Firebase
