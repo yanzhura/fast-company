@@ -14,6 +14,7 @@ import {
     getQualities,
     getQualitiesLoadingStatus
 } from '../../../store/qualities';
+import { currentUserData } from '../../../store/users';
 
 const UserEdit = () => {
     const { uid } = useParams();
@@ -28,7 +29,8 @@ const UserEdit = () => {
         professions,
         getProfession
     } = useProfession();
-    const { currentUser, update } = useAuth();
+    const { update } = useAuth();
+    const currentUser = useSelector(currentUserData());
 
     const genders = [
         { name: 'Мужской', value: 'male' },

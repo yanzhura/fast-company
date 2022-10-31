@@ -1,19 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import UserPage from '../components/pages/UserPage';
 import UsersListPage from '../components/pages/UsersListPage';
 import UsersLoader from '../components/ui/hoc/UsersLoader';
-import UserProvider from '../hooks/useUsers';
-import { getCurrentUserId } from '../store/users';
 
 const Users = () => {
-    const uid = useSelector(getCurrentUserId());
+    const { uid } = useParams();
     return (
         <>
             <UsersLoader>
-                <UserProvider>
-                    {uid ? <UserPage uid={uid} /> : <UsersListPage />}
-                </UserProvider>
+                {uid ? <UserPage uid={uid} /> : <UsersListPage />}
             </UsersLoader>
         </>
     );

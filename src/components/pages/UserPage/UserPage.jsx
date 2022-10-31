@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 
 const UserPage = ({ uid }) => {
     const user = useSelector(getUserById(uid));
-    console.log('user', user);
     return (
         <div>
             <div>

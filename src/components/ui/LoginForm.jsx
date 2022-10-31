@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/TextField';
 import CheckboxField from '../common/form/CheckboxField';
 import { validator } from '../../utils/validator';
-import { signIn } from '../../store/users';
-import { useDispatch } from 'react-redux';
+import { getAuthErrors, signIn } from '../../store/users';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 const LoginForm = () => {
@@ -15,6 +15,7 @@ const LoginForm = () => {
         stayOnline: false
     });
     const [errors, setErrors] = useState({});
+    const loginError = useSelector(getAuthErrors());
 
     useEffect(() => {
         validate();
@@ -96,6 +97,7 @@ const LoginForm = () => {
                 >
                     Запомнить меня
                 </CheckboxField>
+                {loginError && <p className="text-danger">{loginError}</p>}
                 <button
                     onClick={handleSubmit}
                     disabled={isValid}

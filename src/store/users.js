@@ -3,18 +3,20 @@ import authService from '../services/auth.service';
 import {
     getAccessToken,
     getUserId,
+    removeAuthData,
     setTokens
 } from '../services/localStorage.service';
 import userService from '../services/user.service';
 import { randomInt } from '../utils/utils';
 import customHistory from '../utils/customHistory';
+import { generateAuthError } from '../utils/generateAuthError';
 
 const initialState = getAccessToken()
     ? {
           entities: null,
           isLoading: true,
           error: null,
-          auth: { uerId: getUserId() },
+          auth: { userId: getUserId() },
           isLoggedIn: true,
           dataLoaded: false
       }
@@ -57,6 +59,15 @@ const usersSlice = createSlice({
                 state.entities = [];
             }
             state.entities.push(action.payload);
+        },
+        userLoggedOut: (state) => {
+            state.entities = null;
+            state.isLoggedIn = false;
+            state.auth = null;
+            state.dataLoaded = false;
+        },
+        authRequested: (state) => {
+            state.error = null;
         }
     }
 });
@@ -68,10 +79,11 @@ const {
     usersRequestFailed,
     authRequestSuccess,
     authRequestFailed,
-    userCreated
+    userCreated,
+    userLoggedOut,
+    authRequested
 } = actions;
 
-const authRequested = createAction('users/authRequested');
 const userCreateRequested = createAction('users/userCreateRequested');
 const userCreateFailed = createAction('users/userCreateFailed');
 
@@ -86,7 +98,13 @@ export const signIn =
             dispatch(authRequestSuccess({ userId: data.localId }));
             customHistory.push(redirect);
         } catch (error) {
-            dispatch(authRequestFailed(error.message));
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                const errorMessage = generateAuthError(message);
+                dispatch(authRequestFailed(errorMessage));
+            } else {
+                dispatch(authRequestFailed(error.message));
+            }
         }
     };
 
@@ -123,6 +141,12 @@ export const signUp =
         }
     };
 
+export const logOut = () => (dispatch) => {
+    removeAuthData();
+    dispatch(userLoggedOut);
+    customHistory.push('/');
+};
+
 export const loadUsersList = () => async (dispatch, getState) => {
     dispatch(usersRequested());
     try {
@@ -141,9 +165,16 @@ export const getUserById = (userId) => (state) => {
     }
 };
 
+export const currentUserData = () => (state) => {
+    return state.users.entities
+        ? state.users.entities.find((u) => u._id === state.users.auth.userId)
+        : null;
+};
+
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
 export const getUsersLoadingStatus = () => (state) => state.users.isLoading;
 export const getCurrentUserId = () => (state) => state.users.auth.userId;
+export const getAuthErrors = () => (state) => state.users.error;
 
 export default usersReducer;
