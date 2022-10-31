@@ -20,12 +20,9 @@ const CommentsProvider = ({ children }) => {
     const { uid } = useParams();
     const currentUserId = useSelector(getCurrentUserId());
 
-    useEffect(
-        (params) => {
-            getComments();
-        },
-        [uid]
-    );
+    useEffect(() => {
+        getComments();
+    }, [uid]);
 
     useEffect(() => {
         if (error !== null) {

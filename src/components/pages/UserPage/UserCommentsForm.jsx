@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { createComment } from '../../../store/comments';
+import { getCurrentUserId } from '../../../store/users';
 import { validator } from '../../../utils/validator';
 import TextAreaField from '../../common/form/TextAreaField';
-import { useComments } from '../../../hooks/useComments';
 
 const UserCommentsForm = () => {
-    const { createComment } = useComments();
+    const dispatch = useDispatch();
+    const { uid } = useParams();
+    const currentUserId = useSelector(getCurrentUserId());
 
     const [formData, setFormData] = useState({
         content: ''
@@ -44,7 +49,13 @@ const UserCommentsForm = () => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        createComment(formData.content);
+        dispatch(
+            createComment({
+                content: formData.content,
+                pageId: uid,
+                userId: currentUserId
+            })
+        );
         setFormData({
             content: ''
         });
