@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getRefreshToken } from './localStorage.service';
+import { getAccessToken, getRefreshToken } from './localStorage.service';
 
 const httpAuth = axios.create({
     baseURL: 'https://identitytoolkit.googleapis.com/v1/',
@@ -29,6 +29,14 @@ const authService = {
         const { data } = await httpAuth.post('token', {
             grant_type: 'refresh_token',
             refresh_token: getRefreshToken()
+        });
+        return data;
+    },
+    update: async ({ email, ...rest }) => {
+        const { data } = await httpAuth.post('accounts:update', {
+            idToken: getAccessToken(),
+            email,
+            returnSecureToken: true
         });
         return data;
     }

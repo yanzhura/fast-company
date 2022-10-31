@@ -68,6 +68,13 @@ const usersSlice = createSlice({
         },
         authRequested: (state) => {
             state.error = null;
+        },
+        userUpdated: (state, action) => {
+            const newEntities = state.entities.filter(
+                (user) => user._id !== action.payload._id
+            );
+            newEntities.push(action.payload);
+            state.entities = newEntities;
         }
     }
 });
@@ -81,11 +88,38 @@ const {
     authRequestFailed,
     userCreated,
     userLoggedOut,
-    authRequested
+    authRequested,
+    userUpdated
 } = actions;
 
 const userCreateRequested = createAction('users/userCreateRequested');
+const userUpdateRequested = createAction('users/userUpdateRequested');
 const userCreateFailed = createAction('users/userCreateFailed');
+const userUpdateFailed = createAction('users/userUpdateFailed');
+
+const updateUser = (payload) => async (dispatch) => {
+    dispatch(userUpdateRequested());
+    try {
+        const { content } = await userService.update(payload);
+        dispatch(userUpdated(content));
+    } catch (error) {
+        dispatch(userUpdateFailed(error.message));
+    }
+    customHistory.push(`/users/${payload._id}`);
+};
+
+export const edit =
+    ({ email, ...rest }) =>
+    async (dispatch) => {
+        dispatch(authRequested());
+        try {
+            const data = await authService.update({ email });
+            dispatch(authRequestSuccess({ userId: data.localId }));
+            dispatch(updateUser({ email, ...rest }));
+        } catch (error) {
+            dispatch(authRequestFailed(error.message));
+        }
+    };
 
 export const signIn =
     ({ payload, redirect }) =>
@@ -143,7 +177,7 @@ export const signUp =
 
 export const logOut = () => (dispatch) => {
     removeAuthData();
-    dispatch(userLoggedOut);
+    dispatch(userLoggedOut());
     customHistory.push('/');
 };
 
