@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import UserCommentsForm from './UserCommentsForm';
 import Comment from './Comment';
 import Preloader from '../../common/Preloader';
 import { useComments } from '../../../hooks/useComments';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    getComments,
+    getCommentsLoadingStatus,
+    loadCommentsList
+} from '../../../store/comments';
+import { useParams } from 'react-router-dom';
 
 const CommentsList = () => {
-    const { comments, removeComment } = useComments();
-
+    const dispatch = useDispatch();
+    const { uid } = useParams();
+    useEffect(() => {
+        dispatch(loadCommentsList(uid));
+    }, [uid]);
+    const isLoading = useSelector(getCommentsLoadingStatus());
+    const { removeComment } = useComments();
+    const comments = useSelector(getComments());
     const handleRemove = (id) => {
         removeComment(id);
     };
@@ -21,7 +34,7 @@ const CommentsList = () => {
 
     const sortedComments = comments && sortCommentByDate();
 
-    const getComments = () => {
+    const getCommentElements = () => {
         return sortedComments.map((comment) => (
             <Comment
                 key={comment._id}
@@ -46,10 +59,10 @@ const CommentsList = () => {
                 <div className="card-body ">
                     <h2>Comments</h2>
                     <hr />
-                    {!comments ? (
+                    {isLoading ? (
                         <Preloader />
                     ) : comments.length > 0 ? (
-                        getComments()
+                        getCommentElements()
                     ) : (
                         'This user has no comments yet'
                     )}

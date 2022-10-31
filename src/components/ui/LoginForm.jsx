@@ -2,23 +2,24 @@ import React, { useEffect, useState } from 'react';
 import TextField from '../common/form/TextField';
 import CheckboxField from '../common/form/CheckboxField';
 import { validator } from '../../utils/validator';
-import { useAuth } from '../../hooks/useAuth';
+import { getAuthErrors, signIn } from '../../store/users';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 const LoginForm = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         stayOnline: false
     });
     const [errors, setErrors] = useState({});
+    const loginError = useSelector(getAuthErrors());
 
     useEffect(() => {
         validate();
     }, [formData]);
-
-    const { signIn } = useAuth();
-    const history = useHistory();
 
     const handleChange = ({ name, value }) => {
         setFormData((prevFormData) => ({
@@ -33,20 +34,14 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await signIn(formData);
-            history.push(
-                history.location.state
-                    ? history.location.state.from.pathname
-                    : '/'
-            );
-        } catch (error) {
-            setErrors(error);
-        }
+        const redirect = history.location.state
+            ? history.location.state.from.pathname
+            : '/';
+        dispatch(signIn({ payload: formData, redirect }));
     };
 
     const isValid = Object.keys(errors).length !== 0;
@@ -102,6 +97,7 @@ const LoginForm = () => {
                 >
                     Запомнить меня
                 </CheckboxField>
+                {loginError && <p className="text-danger">{loginError}</p>}
                 <button
                     onClick={handleSubmit}
                     disabled={isValid}

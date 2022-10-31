@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Router, Redirect, Route, Switch } from 'react-router-dom';
 import Login from './layouts/Login';
 import Logout from './layouts/Logout';
 import Main from './layouts/Main';
@@ -9,17 +9,18 @@ import Users from './layouts/Users';
 import UserEdit from './components/pages/UserEdit';
 import { ToastContainer } from 'react-toastify';
 import ProfessionProvider from './hooks/useProfessions';
-import QualityProvider from './hooks/useQualities';
 import AuthProvider from './hooks/useAuth';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import customHistory from './utils/customHistory';
+import AppLoader from './components/ui/hoc/AppLoader';
 
 const App = () => {
     return (
-        <BrowserRouter>
-            <AuthProvider>
-                <NavBar />
-                <ProfessionProvider>
-                    <QualityProvider>
+        <Router history={customHistory}>
+            <AppLoader>
+                <AuthProvider>
+                    <NavBar />
+                    <ProfessionProvider>
                         <Switch>
                             <Route path="/" exact component={Main} />
                             <Route path="/login/:type?" component={Login} />
@@ -36,11 +37,11 @@ const App = () => {
                             <Route path="/logout" component={Logout} />
                             <Redirect to="/not_found" />
                         </Switch>
-                    </QualityProvider>
-                </ProfessionProvider>
-                <ToastContainer />
-            </AuthProvider>
-        </BrowserRouter>
+                    </ProfessionProvider>
+                    <ToastContainer />
+                </AuthProvider>
+            </AppLoader>
+        </Router>
     );
 };
 

@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Qualities from '../../ui/Qualities';
 import RandomAvatar from '../../common/RandomAvatar';
-import { useAuth } from '../../../hooks/useAuth';
 import Profession from '../../ui/Profession';
+import { useSelector } from 'react-redux';
+import { getCurrentUserId } from '../../../store/users';
 
 const UserCard = ({
     name,
@@ -15,12 +16,12 @@ const UserCard = ({
     uid,
     gender
 }) => {
-    const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
     return (
         <>
             <div className="card mb-3">
                 <div className="card-body">
-                    {currentUser._id === uid && (
+                    {currentUserId === uid && (
                         <Link to={`/users/${uid}/edit`}>
                             <button className="position-absolute top-0 end-0 btn btn-light btn-sm">
                                 <i className="bi bi-gear"></i>

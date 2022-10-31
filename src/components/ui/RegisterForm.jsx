@@ -5,12 +5,13 @@ import SelectField from '../common/form/SelectField';
 import RadioFileld from '../common/form/RadioFileld';
 import MultiselectField from '../common/form/MultiselectField';
 import CheckboxField from '../common/form/CheckboxField';
-import { useQuality } from '../../hooks/useQualities';
 import { useProfession } from '../../hooks/useProfessions';
-import { useAuth } from '../../hooks/useAuth';
-import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getQualities } from '../../store/qualities';
+import { signUp } from '../../store/users';
 
 const RegisterForm = () => {
+    const dispatch = useDispatch();
     const initialFormState = {
         email: '',
         password: '',
@@ -21,12 +22,10 @@ const RegisterForm = () => {
         license: false
     };
 
-    const history = useHistory();
-    const { signUp } = useAuth();
     const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState({});
     const { professions } = useProfession();
-    const { qualities } = useQuality();
+    const qualities = useSelector(getQualities());
 
     useEffect(() => {
         validate();
@@ -45,7 +44,7 @@ const RegisterForm = () => {
         return Object.keys(errors).length === 0;
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         const isValid = validate();
         if (!isValid) return;
@@ -54,12 +53,7 @@ const RegisterForm = () => {
             qualities: formData.qualities.map((q) => q._id),
             profession: formData.profession._id
         };
-        try {
-            await signUp(newData);
-            history.push('/');
-        } catch (error) {
-            setErrors(error);
-        }
+        dispatch(signUp(newData));
     };
 
     const isValid = Object.keys(errors).length !== 0;

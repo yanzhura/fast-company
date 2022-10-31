@@ -2,13 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import RandomAvatar from '../../common/RandomAvatar';
 import { getDateFromNow } from '../../../utils/utils';
-import { useUser } from '../../../hooks/useUsers';
-import { useAuth } from '../../../hooks/useAuth';
+import { getCurrentUserId, getUserById } from '../../../store/users';
+import { useSelector } from 'react-redux';
 
 const Comment = ({ commentId, userId, content, createdAt, onRemove }) => {
-    const { getUserById } = useUser();
-    const user = getUserById(userId);
-    const { currentUser } = useAuth();
+    const user = useSelector(getUserById(userId));
+    const currentUserId = useSelector(getCurrentUserId());
     return (
         <div className="bg-light card-body  mb-3">
             <div className="row">
@@ -28,7 +27,7 @@ const Comment = ({ commentId, userId, content, createdAt, onRemove }) => {
                                             {` - ${getDateFromNow(createdAt)}`}{' '}
                                         </span>
                                     </p>
-                                    {currentUser._id === userId && (
+                                    {currentUserId === userId && (
                                         <button
                                             onClick={() => onRemove(commentId)}
                                             className="btn btn-sm text-primary d-flex align-items-center"

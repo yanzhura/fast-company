@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useQuality } from '../../hooks/useQualities';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    getQualities,
+    getQualitiesLoadingStatus,
+    // getQuality,
+    loadQualitiesList
+} from '../../store/qualities';
 
 const Qualities = ({ qualities }) => {
-    const { isLoading, getQuality } = useQuality();
+    const allQualities = useSelector(getQualities());
+    const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(loadQualitiesList());
+    }, []);
+
     const getQualityBadges = () => {
-        if (!isLoading) {
-            return qualities.map((id) => {
-                const quality = getQuality(id);
-                const badgeStyle = `badge bg-${quality.color} m-1`;
-                return (
-                    <span key={quality._id} className={badgeStyle}>
-                        {quality.name}
-                    </span>
-                );
-            });
-        } else {
-            return <>Loading...</>;
-        }
+        return qualities.map((id) => {
+            const quality = allQualities.find((q) => q._id === id);
+            const badgeStyle = `badge bg-${quality.color} m-1`;
+            return (
+                <span key={quality._id} className={badgeStyle}>
+                    {quality.name}
+                </span>
+            );
+        });
     };
 
-    return <>{getQualityBadges()}</>;
+    return <>{qualityIsLoading ? 'Loading' : getQualityBadges()}</>;
 };
 
 Qualities.propTypes = {
