@@ -44,14 +44,6 @@ const UsersListPage = () => {
 
     const handleBookmark = (id) => {
         console.log('Bookmark set fot user', id);
-        // setUsers((prevUsers) =>
-        //     prevUsers.map((user) => {
-        //         if (user._id === id) {
-        //             user.bookmark = !user.bookmark;
-        //         }
-        //         return user;
-        //     })
-        // );
     };
 
     const handlePageChange = (page) => {
@@ -85,7 +77,7 @@ const UsersListPage = () => {
         );
         if (filterProfession) {
             return filteredCurrentUser.filter(
-                (u) => u.profession._id === filterProfession._id
+                (u) => u.profession === filterProfession._id
             );
         } else if (filterUsername) {
             return filteredCurrentUser.filter((u) =>
