@@ -2,40 +2,40 @@ import React, { useEffect } from 'react';
 import UserCommentsForm from './UserCommentsForm';
 import Comment from './Comment';
 import Preloader from '../../common/Preloader';
-import { useComments } from '../../../hooks/useComments';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     getComments,
     getCommentsLoadingStatus,
-    loadCommentsList
+    loadCommentsList,
+    removeComment
 } from '../../../store/comments';
 import { useParams } from 'react-router-dom';
 
 const CommentsList = () => {
     const dispatch = useDispatch();
     const { uid } = useParams();
+    // let sortedComments = [];
+
+    const isLoading = useSelector(getCommentsLoadingStatus());
+    const comments = useSelector(getComments());
+
     useEffect(() => {
         dispatch(loadCommentsList(uid));
     }, [uid]);
-    const isLoading = useSelector(getCommentsLoadingStatus());
-    const { removeComment } = useComments();
-    const comments = useSelector(getComments());
+
     const handleRemove = (id) => {
-        removeComment(id);
+        dispatch(removeComment(id));
     };
 
-    const sortCommentByDate = () => {
-        const sortedComments = [...comments];
-        sortedComments.sort((a, b) => {
-            return parseInt(b.created_at) - parseInt(a.created_at);
-        });
-        return sortedComments;
-    };
-
-    const sortedComments = comments && sortCommentByDate();
+    // if (!isLoading) {
+    //     sortedComments = [...comments];
+    //     sortedComments.sort((a, b) => {
+    //         return parseInt(b.created_at) - parseInt(a.created_at);
+    //     });
+    // }
 
     const getCommentElements = () => {
-        return sortedComments.map((comment) => (
+        return comments.map((comment) => (
             <Comment
                 key={comment._id}
                 commentId={comment._id}

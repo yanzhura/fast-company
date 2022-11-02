@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { validator } from '../../../utils/validator';
 import BackButton from '../../common/BackButton';
 import MultiselectField from '../../common/form/MultiselectField';
@@ -7,29 +7,27 @@ import RadioFileld from '../../common/form/RadioFileld';
 import SelectField from '../../common/form/SelectField';
 import TextField from '../../common/form/TextField';
 import RandomAvatar from '../../common/RandomAvatar';
-import { useProfession } from '../../../hooks/useProfessions';
-import { useAuth } from '../../../hooks/useAuth';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { currentUserData, edit } from '../../../store/users';
 import {
     getQualities,
     getQualitiesLoadingStatus
 } from '../../../store/qualities';
-import { currentUserData } from '../../../store/users';
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from '../../../store/professions';
 
 const UserEdit = () => {
+    const dispatch = useDispatch();
     const { uid } = useParams();
     const [formData, setFormData] = useState(undefined);
     const [errors, setErrors] = useState({});
-    const history = useHistory();
     const qualities = useSelector(getQualities());
     const qualityIsLoading = useSelector(getQualitiesLoadingStatus());
 
-    const {
-        isLoading: profIsLoading,
-        professions,
-        getProfession
-    } = useProfession();
-    const { update } = useAuth();
+    const professions = useSelector(getProfessions());
+    const profIsLoading = useSelector(getProfessionsLoadingStatus());
     const currentUser = useSelector(currentUserData());
 
     const genders = [
@@ -75,7 +73,8 @@ const UserEdit = () => {
         if (!profIsLoading) {
             const prof = {
                 _id: currentUser.profession,
-                name: getProfession(currentUser.profession).name
+                name: professions.find((p) => p._id === currentUser.profession)
+                    .name
             };
             return prof;
         }
@@ -124,13 +123,7 @@ const UserEdit = () => {
             qualities: formData.qualities.map((q) => q._id),
             profession: formData.profession._id
         };
-        try {
-            await update(newData);
-            history.push('/');
-        } catch (error) {
-            setErrors(error);
-        }
-        history.replace(`/users/${uid}`);
+        dispatch(edit(newData));
     };
 
     const isValid = Object.keys(errors).length !== 0;

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import UserCard from './UserCard';
 import CommentsList from './CommentsList';
 import Preloader from '../../common/Preloader';
-import CommentsProvider from '../../../hooks/useComments';
 import { getUserById } from '../../../store/users';
 import { useSelector } from 'react-redux';
 
@@ -19,9 +18,7 @@ const UserPage = ({ uid }) => {
                                 <UserCard {...user} uid={uid} />
                             </div>
                             <div className="col-md-8">
-                                <CommentsProvider>
-                                    <CommentsList />
-                                </CommentsProvider>
+                                <CommentsList />
                             </div>
                         </div>
                     </div>

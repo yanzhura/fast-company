@@ -5,10 +5,10 @@ import SelectField from '../common/form/SelectField';
 import RadioFileld from '../common/form/RadioFileld';
 import MultiselectField from '../common/form/MultiselectField';
 import CheckboxField from '../common/form/CheckboxField';
-import { useProfession } from '../../hooks/useProfessions';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQualities } from '../../store/qualities';
 import { signUp } from '../../store/users';
+import { getProfessions } from '../../store/professions';
 
 const RegisterForm = () => {
     const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const RegisterForm = () => {
 
     const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState({});
-    const { professions } = useProfession();
+    const professions = useSelector(getProfessions());
     const qualities = useSelector(getQualities());
 
     useEffect(() => {

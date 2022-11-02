@@ -79,11 +79,9 @@ UserCard.propTypes = {
     profession: PropTypes.string.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
-    bookmark: PropTypes.bool.isRequired,
+    bookmark: PropTypes.bool,
     uid: PropTypes.string.isRequired,
     gender: PropTypes.oneOf(['male', 'female', 'other']).isRequired
 };
 
 export default UserCard;
-
-// TODO Сделать загрузку названия професси из Firebase

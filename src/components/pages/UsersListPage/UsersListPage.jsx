@@ -7,14 +7,18 @@ import UsersTable from '../../ui/UsersTable';
 import SearchBar from '../../ui/SearchBar';
 import SelectField from '../../common/form/SelectField';
 import PageSizeSelector from '../../ui/PageSizeSelector';
-import { useProfession } from '../../../hooks/useProfessions';
 import { useSelector } from 'react-redux';
 import { getCurrentUserId, getUsersList } from '../../../store/users';
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from '../../../store/professions';
 
 const UsersListPage = () => {
     const [currentPage, setCurrentage] = useState(1);
     const [pageSize, setPageSize] = useState(6);
-    const { professions, isLoading: professionsLoading } = useProfession();
+    const professions = useSelector(getProfessions());
+    const profIsLoading = useSelector(getProfessionsLoadingStatus());
     const [filterProfession, setFilterProfession] = useState('');
     const [filterUsername, setFilterUsername] = useState('');
     const [sort, setSort] = useState({ path: 'name', order: 'asc' });
@@ -40,14 +44,6 @@ const UsersListPage = () => {
 
     const handleBookmark = (id) => {
         console.log('Bookmark set fot user', id);
-        // setUsers((prevUsers) =>
-        //     prevUsers.map((user) => {
-        //         if (user._id === id) {
-        //             user.bookmark = !user.bookmark;
-        //         }
-        //         return user;
-        //     })
-        // );
     };
 
     const handlePageChange = (page) => {
@@ -81,7 +77,7 @@ const UsersListPage = () => {
         );
         if (filterProfession) {
             return filteredCurrentUser.filter(
-                (u) => u.profession._id === filterProfession._id
+                (u) => u.profession === filterProfession._id
             );
         } else if (filterUsername) {
             return filteredCurrentUser.filter((u) =>
@@ -121,7 +117,7 @@ const UsersListPage = () => {
                 </div>
                 <div className="col-3"></div>
                 <div className="col-3">
-                    {!professionsLoading && (
+                    {!profIsLoading && (
                         <SelectField
                             options={professions}
                             name="profession"

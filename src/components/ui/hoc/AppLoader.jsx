@@ -8,14 +8,15 @@ import {
     loadUsersList
 } from '../../../store/users';
 import Preloader from '../../common/Preloader';
+import { loadProfessionsList } from '../../../store/professions';
 
 const AppLoader = ({ children }) => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(getIsLoggedIn());
     const usersStatusLoading = useSelector(getUsersLoadingStatus());
     useEffect(() => {
-        dispatch(loadQualitiesList);
-        // TODO: dispatch(loadProfessions)
+        dispatch(loadQualitiesList());
+        dispatch(loadProfessionsList());
         if (isLoggedIn) {
             dispatch(loadUsersList());
         }
